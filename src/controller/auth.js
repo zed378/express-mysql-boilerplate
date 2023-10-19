@@ -20,7 +20,7 @@ const nodemailer = require("nodemailer");
 const fs = require("fs");
 const mustache = require("mustache");
 const template = fs.readFileSync(__dirname + "/template/template.html", "utf8");
-const templateOTP = fs.readFileSync(__dirname + "/template/OTP.html", "utf8");
+const templateOTP = fs.readFileSync(__dirname + "/template/otp.html", "utf8");
 const transporter = nodemailer.createTransport({
   // service: "hotmail",
   host: process.env.MAIL_HOST,
