@@ -33,6 +33,9 @@ app.use(xss());
 app.use("/auth", authRoute);
 app.use("/migrate", migrateROute);
 app.use("/user", userRoute);
+app.get("/", (req, res) => {
+  res.send("Your API is running");
+});
 
 Connection();
 const port = process.env.PORT;
