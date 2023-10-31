@@ -52,7 +52,7 @@ exports.contactUs = async (req, res) => {
           message: {
             error: err,
             solution:
-              "Failed to sending activation email. Contact your administrator for help.",
+              "Failed to sending server email. Contact your administrator for help.",
           },
         });
 
@@ -64,7 +64,7 @@ exports.contactUs = async (req, res) => {
               message: {
                 error: err,
                 solution:
-                  "Failed to sending activation email. Contact your administrator for help.",
+                  "Failed to sending client email. Contact your administrator for help.",
               },
             });
 
