@@ -10,7 +10,7 @@
     <meta name="x-apple-disable-message-reformatting" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta content="telephone=no" name="format-detection" />
-    <title>Registration</title>
+    <title>New Message</title>
     <!--[if (mso 16)]>
       <style type="text/css">
         a {
@@ -567,7 +567,7 @@
                                         color: #111111;
                                       "
                                     >
-                                      OTP
+                                      New Request Message
                                     </h1>
                                   </td>
                                 </tr>
@@ -696,7 +696,7 @@
                                     align="left"
                                     style="
                                       margin: 0;
-                                      padding-bottom: 15px;
+                                      padding-bottom: 75px;
                                       padding-top: 20px;
                                       padding-left: 30px;
                                       padding-right: 30px;
@@ -715,150 +715,35 @@
                                         font-size: 18px;
                                       "
                                     >
-                                      Dear <b>{{firstName}} {{lastName}},</b>
+                                      From:
+                                      <b>{{firstName}} {{lastName}}</b>
                                       <br />
-                                      I know its hard for you if lost your
-                                      account. We understand that struggle. Your
-                                      OTP is below.
-                                    </p>
-                                  </td>
-                                </tr>
-                              </table>
-                            </td>
-                          </tr>
-                        </table>
-                      </td>
-                    </tr>
-                    <tr style="border-collapse: collapse">
-                      <td
-                        align="left"
-                        style="
-                          padding: 0;
-                          margin: 0;
-                          padding-bottom: 20px;
-                          padding-left: 30px;
-                          padding-right: 30px;
-                        "
-                      >
-                        <table
-                          width="100%"
-                          cellspacing="0"
-                          cellpadding="0"
-                          style="
-                            mso-table-lspace: 0pt;
-                            mso-table-rspace: 0pt;
-                            border-collapse: collapse;
-                            border-spacing: 0px;
-                          "
-                        >
-                          <tr style="border-collapse: collapse">
-                            <td
-                              valign="top"
-                              align="center"
-                              style="padding: 0; margin: 0; width: 540px"
-                            >
-                              <table
-                                width="100%"
-                                cellspacing="0"
-                                cellpadding="0"
-                                role="presentation"
-                                style="
-                                  mso-table-lspace: 0pt;
-                                  mso-table-rspace: 0pt;
-                                  border-collapse: collapse;
-                                  border-spacing: 0px;
-                                "
-                              >
-                                <tr style="border-collapse: collapse">
-                                  <td
-                                    align="center"
-                                    style="
-                                      margin: 0;
-                                      padding-left: 10px;
-                                      padding-right: 10px;
-                                      padding-top: 40px;
-                                      padding-bottom: 40px;
-                                    "
-                                  >
-                                    <!--[if mso
-                                      ]><a
-                                        href="https://viewstripo.email/"
+                                      Email:
+                                      <a
+                                        href="mailto:{{email}}"
                                         target="_blank"
-                                        hidden
+                                        rel="noopener noreferrer"
+                                        style="
+                                          text-decoration: none;
+                                          color: #666666;
+                                        "
+                                        >{{email}}</a
                                       >
-                                        <v:roundrect
-                                          xmlns:v="urn:schemas-microsoft-com:vml"
-                                          xmlns:w="urn:schemas-microsoft-com:office:word"
-                                          esdevVmlButton
-                                          href="https://viewstripo.email/"
-                                          style="
-                                            height: 54px;
-                                            v-text-anchor: middle;
-                                            width: 216px;
-                                          "
-                                          arcsize="4%"
-                                          strokecolor="#7c72dc"
-                                          strokeweight="1px"
-                                          fillcolor="#7c72dc"
-                                        >
-                                          <w:anchorlock></w:anchorlock>
-                                          <center
-                                            style="
-                                              color: #ffffff;
-                                              font-family: helvetica,
-                                                'helvetica neue', arial, verdana,
-                                                sans-serif;
-                                              font-size: 20px;
-                                              font-weight: 400;
-                                              line-height: 20px;
-                                              mso-text-raise: 1px;
-                                            "
-                                          >
-                                            Reset Password
-                                          </center>
-                                        </v:roundrect></a
-                                      > <!
-                                    [endif]--><!--[if !mso]><!-- --><span
-                                      class="es-button-border msohide"
-                                      style="
-                                        border-style: solid;
-                                        border-color: #7c72dc;
-                                        background: #7c72dc;
-                                        color: white;
-                                        padding: 5px 25px;
-                                        font-size: 2rem;
-                                        border-width: 1px;
-                                        display: inline-block;
-                                        border-radius: 2px;
-                                        width: auto;
-                                        mso-hide: all;
-                                      "
-                                    >
-                                      {{otp}} </span
-                                    ><!--<![endif]-->
-                                  </td>
-                                </tr>
-                                <tr style="border-collapse: collapse">
-                                  <td
-                                    class="es-m-txt-l"
-                                    bgcolor="#ffffff"
-                                    align="left"
-                                    style="margin: 0"
-                                  >
-                                    <p
-                                      style="
-                                        margin: 0;
-                                        -webkit-text-size-adjust: none;
-                                        -ms-text-size-adjust: none;
-                                        mso-line-height-rule: exactly;
-                                        font-family: lato, 'helvetica neue',
-                                          helvetica, arial, sans-serif;
-                                        line-height: 27px;
-                                        color: #666666;
-                                        font-size: 18px;
-                                      "
-                                    >
-                                      Your OTP will expires in 5 minutes.
+                                      <br />
+                                      Phone:
+                                      <a
+                                        href="tel:{{phone}}"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        style="
+                                          text-decoration: none;
+                                          color: #666666;
+                                        "
+                                        >{{phone}}</a
+                                      >
+                                      <br />
+                                      <br />
+                                      {{message}}
                                     </p>
                                   </td>
                                 </tr>
@@ -1098,8 +983,7 @@
                                       "
                                     >
                                       You received this email because you just
-                                      forgot your password and need to recover
-                                      and create new password.
+                                      registering for our service.
                                     </p>
                                   </td>
                                 </tr>

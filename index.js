@@ -10,6 +10,7 @@ const xss = require("xss-clean");
 const authRoute = require("./src/routes/auth");
 const migrateROute = require("./src/routes/migrate");
 const userRoute = require("./src/routes/user");
+const mailRoute = require("./src/routes/mail");
 
 const app = express();
 app.use(cors());
@@ -33,6 +34,7 @@ app.use(xss());
 app.use("/auth", authRoute);
 app.use("/migrate", migrateROute);
 app.use("/user", userRoute);
+app.use("/mail", mailRoute);
 app.get("/", (req, res) => {
   res.send("Your API is running");
 });
