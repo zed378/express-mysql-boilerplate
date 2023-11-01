@@ -34,7 +34,7 @@ exports.contactUs = async (req, res) => {
 
     const optServer = {
       from: process.env.MAIL_USER,
-      to: "contact@webcompose.id",
+      to: "contact@webcompose.id, eva@webcompose.id",
       subject: `New Message from ${firstName} ${lastName}`,
       html: mustache.render(templateMsg, {
         firstName,
