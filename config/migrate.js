@@ -1,11 +1,8 @@
-const { Users, Clients, Approach, Platform } = require("../models");
+const { db } = require("./");
 
 async function Up() {
   try {
-    await Users.sync({ alter: true });
-    await Clients.sync({ alter: true });
-    await Approach.sync({ alter: true });
-    await Platform.sync({ alter: true });
+    db.sync({ alter: true });
     console.log("Database Synced");
   } catch (error) {
     console.log(error);
@@ -14,10 +11,7 @@ async function Up() {
 
 async function Down() {
   try {
-    Users.drop();
-    Clients.drop();
-    Approach.drop();
-    Platform.drop();
+    db.drop();
     console.log("Table Dropped");
   } catch (error) {
     console.log(error);

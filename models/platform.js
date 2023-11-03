@@ -5,12 +5,12 @@ const Platform = db.define(
   "platform",
   {
     id: {
-      type: DataTypes.UUID,
+      type: DataTypes.STRING,
       defaultValue: Sequelize.UUIDV4,
       primaryKey: true,
     },
     name: {
-      type: DataTypes.DATEONLY,
+      type: DataTypes.STRING,
     },
     createdAt: {
       type: DataTypes.DATE,

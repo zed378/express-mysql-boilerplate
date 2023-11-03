@@ -7,10 +7,15 @@ const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
 const xss = require("xss-clean");
 
+// routes
 const authRoute = require("./src/routes/auth");
 const migrateROute = require("./src/routes/migrate");
 const userRoute = require("./src/routes/user");
 const mailRoute = require("./src/routes/mail");
+const companyRoute = require("./src/routes/company");
+const platformRoute = require("./src/routes/platform");
+const statusRoute = require("./src/routes/status");
+const approachRoute = require("./src/routes/approach");
 
 const app = express();
 app.use(cors());
@@ -35,8 +40,15 @@ app.use("/auth", authRoute);
 app.use("/migrate", migrateROute);
 app.use("/user", userRoute);
 app.use("/mail", mailRoute);
+app.use("/company", companyRoute);
+app.use("/platform", platformRoute);
+app.use("/status", statusRoute);
+app.use("/approach", approachRoute);
 app.get("/", (req, res) => {
-  res.send("Your API is running");
+  res.send({
+    status: "Success",
+    message: "Your API is running",
+  });
 });
 
 Connection();

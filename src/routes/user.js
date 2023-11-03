@@ -12,7 +12,7 @@ const {
 } = require("../controller/user");
 
 router.get("/all", auth, getAllUser);
-router.get("/:id", getUser);
+router.get("/:id", auth, getUser);
 router.post("/username", auth, updateUserName);
 router.post("/profile", auth, profileImg("picture"), updatePict);
 router.post("/set-status", auth, setIsActive);

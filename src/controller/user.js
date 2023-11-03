@@ -9,21 +9,33 @@ const inputValidation = Joi.object({
 
 exports.getAllUser = async (req, res) => {
   try {
-    const data = await Users.findAll({
-      attributes: {
-        exclude: ["password", "updatedAt", "createdAt", "otp", "token"],
-      },
-    });
+    const role = req.user.role;
 
-    req.user.role === ("SYS" || "ADMIN")
-      ? res.status(200).send({
-          status: "Success",
-          data,
-        })
-      : res.status(400).send({
-          status: "Error",
-          message: "Access Denied",
-        });
+    if (role === "SYS" || role === "ADMIN") {
+      const data = await Users.findAndCountAll({
+        attributes: {
+          exclude: [
+            "password",
+            "updatedAt",
+            "createdAt",
+            "otp",
+            "otpToken",
+            "token",
+          ],
+        },
+      });
+
+      res.status(200).send({
+        status: "Success",
+        total: data.count,
+        data: data.rows,
+      });
+    } else {
+      res.status(400).send({
+        status: "Error",
+        message: "You have no rights to access the data",
+      });
+    }
   } catch (error) {
     res.status(400).send({
       status: "Error",
@@ -35,18 +47,33 @@ exports.getAllUser = async (req, res) => {
 exports.getUser = async (req, res) => {
   try {
     const { id } = req.params;
+    const role = req.user.role;
 
-    const data = await Users.findOne({
-      where: { id },
-      attributes: {
-        exclude: ["password", "updatedAt", "createdAt", "otp", "token"],
-      },
-    });
+    if (role === "SYS" || role === "ADMIN" || role === "MARKETING") {
+      const data = await Users.findOne({
+        where: { id },
+        attributes: {
+          exclude: [
+            "password",
+            "updatedAt",
+            "createdAt",
+            "otp",
+            "otpToken",
+            "token",
+          ],
+        },
+      });
 
-    res.status(200).send({
-      status: "Success",
-      data,
-    });
+      res.status(200).send({
+        status: "Success",
+        data,
+      });
+    } else {
+      res.status(400).send({
+        status: "Error",
+        message: "You have no rights to access the data",
+      });
+    }
   } catch (error) {
     res.status(400).send({
       status: "Error",

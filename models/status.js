@@ -1,34 +1,28 @@
 const { Sequelize, DataTypes } = require("sequelize");
 const { db } = require("../config");
 
-const Approach = db.define(
-  "approach",
+const Status = db.define(
+  "status",
   {
     id: {
       type: DataTypes.STRING,
       defaultValue: Sequelize.UUIDV4,
       primaryKey: true,
     },
-    date: {
-      type: DataTypes.DATEONLY,
-    },
-    companyId: {
-      type: DataTypes.STRING,
-    },
-    platformId: {
-      type: DataTypes.STRING,
-    },
-    approachingBy: {
-      type: DataTypes.STRING,
-    },
-    notes: {
-      type: DataTypes.STRING,
-    },
-    statusId: {
-      type: DataTypes.STRING,
-    },
-    userId: {
-      type: DataTypes.STRING,
+    name: {
+      type: DataTypes.ENUM,
+      values: [
+        "APPROACHING",
+        "MEETING",
+        "QUOTATION SENT",
+        "CONTRACT SENT",
+        "DOWN PAYMENT",
+        "PROJECT ON PROGRESS",
+        "PROJECT DONE",
+        "INVOICE SENT",
+        "LAST PAYMENT DONE",
+      ],
+      unique: true,
     },
     createdAt: {
       type: DataTypes.DATE,
@@ -43,4 +37,4 @@ const Approach = db.define(
   { freezeTableName: true, timestamps: true }
 );
 
-module.exports = { Approach };
+module.exports = { Status };

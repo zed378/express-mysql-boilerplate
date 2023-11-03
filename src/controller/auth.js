@@ -5,15 +5,7 @@ const bcrypt = require("bcrypt");
 const saltRounds = 12;
 const jwt = require("jsonwebtoken");
 const secret = process.env.SECRET;
-const Joi = require("joi");
-const inputValidation = Joi.object({
-  firstName: Joi.string().min(3),
-  lastName: Joi.string().min(3),
-  email: Joi.string().email().min(6),
-  password: Joi.string().min(3),
-  user: [Joi.string().min(3), Joi.string().email().min(6)],
-  otp: Joi.number().min(6),
-});
+const { inputValidation } = require("../middleware/inputValidation");
 
 // package and config for sending email
 const nodemailer = require("nodemailer");
