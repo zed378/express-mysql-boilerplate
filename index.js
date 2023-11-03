@@ -16,6 +16,7 @@ const companyRoute = require("./src/routes/company");
 const platformRoute = require("./src/routes/platform");
 const statusRoute = require("./src/routes/status");
 const approachRoute = require("./src/routes/approach");
+const invRoutes = require("./src/routes/invoice");
 
 const app = express();
 app.use(cors());
@@ -24,6 +25,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // register upload paths
 app.use("/uploads", express.static("uploads"));
+app.use("/static", express.static("src/static"));
 app.set("trust proxy", 1);
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -44,6 +46,7 @@ app.use("/company", companyRoute);
 app.use("/platform", platformRoute);
 app.use("/status", statusRoute);
 app.use("/approach", approachRoute);
+app.use("/inv", invRoutes);
 app.get("/", (req, res) => {
   res.send({
     status: "Success",
