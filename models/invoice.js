@@ -8,6 +8,12 @@ const Invoice = db.define(
       type: DataTypes.STRING,
       defaultValue: Sequelize.UUIDV4,
       primaryKey: true,
+      unique: true,
+    },
+    inv_id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      unique: true,
     },
     inv_created: {
       type: DataTypes.DATE,

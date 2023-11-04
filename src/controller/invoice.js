@@ -1,6 +1,9 @@
 const { Clients, Invoice } = require("../../models");
+const sequelize = require("sequelize");
 const dateFormat = require("date-and-time");
 const { formatFullDate } = require("node-format-date");
+const { delImg } = require("../middleware/deleteImage");
+const { invoiceExtractor } = require("../middleware/extractname");
 
 const tradePDF = require("@zed378/invoice-pdfkit");
 const romanum = require("romanum");
@@ -44,7 +47,7 @@ exports.getAllInvoices = async (req, res) => {
             },
           },
         ],
-        order: [["createdAt", "ASC"]],
+        order: [["createdAt", "DESC"]],
         offset: skip,
         limit,
       });
@@ -113,7 +116,7 @@ exports.getInvoices = async (req, res) => {
             },
           },
         ],
-        order: [["createdAt", "ASC"]],
+        order: [["createdAt", "DESC"]],
       });
 
       const mappedData = data.rows.map((item) => {
@@ -182,7 +185,7 @@ exports.getInvoice = async (req, res) => {
             },
           },
         ],
-        order: [["createdAt", "ASC"]],
+        order: [["createdAt", "DESC"]],
       });
 
       const newItems = JSON.parse(data.items);
@@ -224,88 +227,227 @@ exports.createInvoice = async (req, res) => {
   try {
     const { language, company, due, items, discount, stateTax, fedTax, ship } =
       req.body;
+    const role = req.user.role;
 
     const date = new Date();
     const year = date.getFullYear();
     const month = date.getMonth();
     const day = date.getDate();
 
-    const yearR = romanum.toNumeral(year);
     const monthR = romanum.toNumeral(month + 1);
-    const dayR = romanum.toNumeral(day);
 
-    let idx = 0;
-    await Invoice.findAndCountAll().then((data) => {
-      idx = data.count + 1;
-    });
-    let invoice = "INV/" + year + "/" + monthR + "/" + dayR + "/" + idx;
+    if (role === "SYS" || role === "ADMIN" || role === "MARKETING") {
+      let idx;
+      await Invoice.findOne({
+        attributes: [[sequelize.fn("max", sequelize.col("inv_id")), "max"]],
+      }).then((data) => {
+        data ? (idx = data.dataValues.max + 1) : (idx = 1);
+      });
 
-    const createdInv =
-      language === "id"
-        ? formatFullDate(date)
-        : dateFormat.format(date, "MMM DD, YYYY");
+      let invoice = idx + "/" + "INV/" + monthR + "/" + year;
 
-    let rawDueDate = new Date(due);
-    const dueDate =
-      language === "id"
-        ? formatFullDate(rawDueDate)
-        : dateFormat.format(rawDueDate, "MMM DD, YYYY");
+      const createdInv =
+        language === "id"
+          ? formatFullDate(date)
+          : dateFormat.format(date, "MMM DD, YYYY");
 
-    const myOrder = {
-      id: invoice,
-      date: {
-        created: createdInv,
-        due: dueDate,
-      },
-      bill: {
-        company: company.company_name,
-        email: company.company_email,
-      },
-      items,
-      total: {
-        discount,
-        stateTax,
-        fedTax,
-        ship,
-      },
-    };
+      let rawDueDate = new Date(due);
+      const dueDate =
+        language === "id"
+          ? formatFullDate(rawDueDate)
+          : dateFormat.format(rawDueDate, "MMM DD, YYYY");
 
-    tradePDF.init({
-      logo: fs.existsSync(__parentDir + "/src/static/logo.jpg")
-        ? fs.readFileSync(__parentDir + "/src/static/logo.jpg")
-        : undefined,
-      company: myCompany,
-      currency: language === "id" ? "IDR" : "USD",
-      language,
-      locale: language === "id" ? "id" : "en-US",
-    });
-    const pdfData = tradePDF.invoice(myOrder);
-    const invTotal = tradePDF.invoiceTotal(myOrder);
-    const filename = `${Date.now()}-${company.company_name.replaceAll(
-      " ",
-      "-"
-    )}-invoice.pdf`;
-    const path = __parentDir + "/uploads/invoice/";
+      const myOrder = {
+        id: invoice,
+        date: {
+          created: createdInv,
+          due: dueDate,
+        },
+        bill: {
+          company: company.company_name,
+          email: company.company_email,
+        },
+        items,
+        total: {
+          discount,
+          stateTax,
+          fedTax,
+          ship,
+        },
+      };
 
-    fs.writeFile(path + filename, pdfData, "utf-8", async () => {
-      await Invoice.create({
-        inv_due: rawDueDate,
-        inv_num: invoice,
-        companyId: company.id,
-        discount,
-        stateTax,
-        fedTax,
-        ship,
-        filename,
-        total: invTotal,
-        items: { data: items },
-      }).then(() => {
-        res.status(200).send({
-          status: "Success",
-          message: filename + " created successfully",
+      tradePDF.init({
+        logo: fs.existsSync(__parentDir + "/src/static/logo.jpg")
+          ? fs.readFileSync(__parentDir + "/src/static/logo.jpg")
+          : undefined,
+        company: myCompany,
+        currency: language === "id" ? "IDR" : "USD",
+        language,
+        locale: language === "id" ? "id" : "en-US",
+      });
+      const pdfData = tradePDF.invoice(myOrder);
+      const invTotal = tradePDF.invoiceTotal(myOrder);
+      const filename = `${Date.now()}-${company.company_name.replace(
+        /[', ]/g,
+        "-"
+      )}-invoice.pdf`;
+      const path = __parentDir + "/uploads/invoice/";
+
+      fs.writeFile(path + filename, pdfData, "utf-8", async () => {
+        await Invoice.create({
+          inv_due: rawDueDate,
+          inv_num: invoice,
+          companyId: company.id,
+          discount,
+          stateTax,
+          fedTax,
+          ship,
+          filename,
+          total: invTotal,
+          items: { data: items },
+        }).then(() => {
+          res.status(200).send({
+            status: "Success",
+            message: filename + " created successfully",
+          });
         });
       });
+    } else {
+      res.status(400).send({
+        status: "Error",
+        message: "You have no rights to access the data",
+      });
+    }
+  } catch (error) {
+    res.status(400).send({
+      status: "Error",
+      message: error.message,
     });
+  }
+};
+
+exports.editInvoice = async (req, res) => {
+  try {
+    const {
+      id,
+      language,
+      inv_num,
+      inv_created,
+      company,
+      due,
+      items,
+      discount,
+      stateTax,
+      fedTax,
+      filename,
+      ship,
+    } = req.body;
+    const role = req.user.role;
+
+    if (role === "SYS" || role === "ADMIN" || role === "MARKETING") {
+      const myOrder = {
+        id: inv_num,
+        date: {
+          created: inv_created,
+          due: due,
+        },
+        bill: {
+          company: company.company_name,
+          email: company.company_email,
+        },
+        items,
+        total: {
+          discount,
+          stateTax,
+          fedTax,
+          ship,
+        },
+      };
+
+      delImg(invoiceExtractor(filename));
+
+      tradePDF.init({
+        logo: fs.existsSync(__parentDir + "/src/static/logo.jpg")
+          ? fs.readFileSync(__parentDir + "/src/static/logo.jpg")
+          : undefined,
+        company: myCompany,
+        currency: language === "id" ? "IDR" : "USD",
+        language,
+        locale: language === "id" ? "id" : "en-US",
+      });
+      const pdfData = tradePDF.invoice(myOrder);
+      const invTotal = tradePDF.invoiceTotal(myOrder);
+      const newFilename = `${Date.now()}-${company.company_name.replace(
+        /[', ]/g,
+        "-"
+      )}-invoice.pdf`;
+      const path = __parentDir + "/uploads/invoice/";
+
+      fs.writeFile(path + newFilename, pdfData, "utf-8", async () => {
+        await Invoice.update(
+          {
+            inv_due: due,
+            inv_num,
+            companyId: company.id,
+            discount,
+            stateTax,
+            fedTax,
+            ship,
+            filename: newFilename,
+            total: invTotal,
+            items: { data: items },
+          },
+          {
+            where: { id },
+          }
+        ).then(() => {
+          res.status(200).send({
+            status: "Success",
+            message: inv_num + " updated successfully",
+          });
+        });
+      });
+    } else {
+      res.status(400).send({
+        status: "Error",
+        message: "You have no rights to access the data",
+      });
+    }
+  } catch (error) {
+    res.status(400).send({
+      status: "Error",
+      message: error.message,
+    });
+  }
+};
+
+exports.deleteInvoice = async (req, res) => {
+  try {
+    const { id, filename } = req.body;
+    const role = req.user.role;
+
+    if (role === "SYS" || role === "ADMIN" || role === "MARKETING") {
+      delImg(invoiceExtractor(filename));
+
+      await Invoice.destroy({ where: { id } })
+        .then(() => {
+          res.status(200).send({
+            status: "Success",
+            message: "Success delete invoice data",
+          });
+        })
+        .catch((error) => {
+          res.status(400).send({
+            status: "Error",
+            message: error,
+          });
+        });
+    } else {
+      res.status(400).send({
+        status: "Error",
+        message: "You have no rights to access the data",
+      });
+    }
   } catch (error) {
     res.status(400).send({
       status: "Error",

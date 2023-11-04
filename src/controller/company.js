@@ -12,7 +12,7 @@ exports.getAllCompany = async (req, res) => {
         attributes: {
           exclude: ["createdAt", "updatedAt"],
         },
-        order: [["createdAt", "ASC"]],
+        order: [["createdAt", "DESC"]],
         offset: skip,
         limit,
       });
@@ -45,7 +45,7 @@ exports.getCompanies = async (req, res) => {
         attributes: {
           exclude: ["createdAt", "updatedAt"],
         },
-        order: [["createdAt", "ASC"]],
+        order: [["createdAt", "DESC"]],
       });
 
       res.status(200).send({

@@ -11,7 +11,7 @@ exports.getAllPlatform = async (req, res) => {
         attributes: {
           exclude: ["createdAt", "updatedAt"],
         },
-        order: [["createdAt", "ASC"]],
+        order: [["createdAt", "DESC"]],
         offset: skip,
         limit,
       });
@@ -44,7 +44,7 @@ exports.getPlatforms = async (req, res) => {
         attributes: {
           exclude: ["createdAt", "updatedAt"],
         },
-        order: [["createdAt", "ASC"]],
+        order: [["createdAt", "DESC"]],
       });
 
       res.status(200).send({

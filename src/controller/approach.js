@@ -69,7 +69,7 @@ exports.getAllApproach = async (req, res) => {
             },
           },
         ],
-        order: [["createdAt", "ASC"]],
+        order: [["createdAt", "DESC"]],
         offset: skip,
         limit,
       });
@@ -164,7 +164,7 @@ exports.getAllUserApproach = async (req, res) => {
             },
           },
         ],
-        order: [["createdAt", "ASC"]],
+        order: [["createdAt", "DESC"]],
         offset: skip,
         limit,
       });
@@ -257,7 +257,7 @@ exports.filteredApproach = async (req, res) => {
             },
           },
         ],
-        order: [["createdAt", "ASC"]],
+        order: [["createdAt", "DESC"]],
       });
 
       res.status(200).send({
