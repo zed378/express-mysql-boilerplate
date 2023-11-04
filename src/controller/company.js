@@ -1,5 +1,6 @@
 const { Clients } = require("../../models");
 const { Op } = require("sequelize");
+const sequelize = require("sequelize");
 
 exports.getAllCompany = async (req, res) => {
   try {
@@ -105,6 +106,9 @@ exports.createCompany = async (req, res) => {
       company_name,
       company_email,
       company_address,
+      company_city,
+      company_state,
+      company_country,
       company_contact,
       company_industry,
       pic_name,
@@ -113,6 +117,15 @@ exports.createCompany = async (req, res) => {
     } = req.body;
 
     if (role === "SYS" || role === "ADMIN" || role === "MARKETING") {
+      let idx;
+      await Clients.findOne({
+        attributes: [
+          [sequelize.fn("max", sequelize.col("company_num")), "max"],
+        ],
+      }).then((data) => {
+        data ? (idx = data.dataValues.max + 1) : (idx = 1);
+      });
+
       await Clients.findOne({
         where: {
           [Op.or]: [{ company_name }, { company_email }],
@@ -126,8 +139,12 @@ exports.createCompany = async (req, res) => {
 
         !result &&
           (await Clients.create({
+            company_id: "CLN-" + idx,
             company_name,
             company_address,
+            company_city,
+            company_state,
+            company_country,
             company_contact,
             company_email,
             company_industry,
@@ -164,6 +181,9 @@ exports.editCompany = async (req, res) => {
       company_name,
       company_email,
       company_address,
+      company_city,
+      company_state,
+      company_country,
       company_contact,
       company_industry,
       pic_name,
@@ -177,6 +197,9 @@ exports.editCompany = async (req, res) => {
           company_name,
           company_email,
           company_address,
+          company_city,
+          company_state,
+          company_country,
           company_contact,
           company_industry,
           pic_name,

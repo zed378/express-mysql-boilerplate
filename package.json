@@ -11,7 +11,7 @@
   "author": "zed378",
   "license": "ISC",
   "dependencies": {
-    "@zed378/invoice-pdfkit": "^1.0.13",
+    "@zed378/invoice-pdfkit": "^1.0.15",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "date-and-time": "^3.0.3",

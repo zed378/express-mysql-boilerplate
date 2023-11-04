@@ -9,6 +9,14 @@ const Clients = db.define(
       defaultValue: Sequelize.UUIDV4,
       primaryKey: true,
     },
+    company_num: {
+      type: DataTypes.INTEGER,
+      unique: true,
+      autoIncrement: true,
+    },
+    company_id: {
+      type: DataTypes.STRING,
+    },
     company_name: {
       type: DataTypes.STRING,
     },
@@ -16,6 +24,15 @@ const Clients = db.define(
       type: DataTypes.STRING,
     },
     company_address: {
+      type: DataTypes.STRING,
+    },
+    company_city: {
+      type: DataTypes.STRING,
+    },
+    company_state: {
+      type: DataTypes.STRING,
+    },
+    company_country: {
       type: DataTypes.STRING,
     },
     company_contact: {

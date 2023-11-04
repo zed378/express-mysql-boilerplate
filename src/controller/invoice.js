@@ -14,8 +14,18 @@ const uploadPath = process.env.HOST_URL + "/uploads/invoice/";
 
 const myCompany = {
   company: "Web Compose",
-  email: "contact@webcompose.id",
+  addr1: "Simomulyo Baru",
+  city: "Surabaya",
+  zip: "ID 60281",
+  state: "East Java",
+  country: "Indonesia",
+  tel: "+62 83-832-736-223",
   web: "https://webcompose.id",
+  email: "contact@webcompose.id",
+  account: "BNI 1277722047 / BCA 1030696294",
+  //extras: ["More information", "And even more"],
+  terms: ["- Only valid if paid on time", "- Pay on time for real please"],
+  tagline: "Makes your ideas happen - Thank you for doing business.",
 };
 
 exports.getAllInvoices = async (req, res) => {
@@ -263,9 +273,13 @@ exports.createInvoice = async (req, res) => {
           created: createdInv,
           due: dueDate,
         },
+        clientID: company.company_id,
+        salesRep: req.user.firstName + " " + req.user.lastName,
         bill: {
           company: company.company_name,
           email: company.company_email,
+          addr1: company.company_address,
+          city: company.company_city,
         },
         items,
         total: {
