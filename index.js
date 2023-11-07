@@ -17,6 +17,7 @@ const platformRoute = require("./src/routes/platform");
 const statusRoute = require("./src/routes/status");
 const approachRoute = require("./src/routes/approach");
 const invRoutes = require("./src/routes/invoice");
+const svcRoutes = require("./src/routes/service");
 
 const app = express();
 app.use(cors());
@@ -47,6 +48,7 @@ app.use("/platform", platformRoute);
 app.use("/status", statusRoute);
 app.use("/approach", approachRoute);
 app.use("/inv", invRoutes);
+app.use("/svc", svcRoutes);
 app.get("/", (req, res) => {
   res.send({
     status: "Success",

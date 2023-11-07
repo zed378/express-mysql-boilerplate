@@ -131,7 +131,7 @@ exports.login = async (req, res) => {
         [Op.or]: [{ username: user }, { email: user }],
       },
       attributes: {
-        exclude: ["password", "createdAt", "updatedAt"],
+        exclude: ["createdAt", "updatedAt"],
       },
     });
 
@@ -175,11 +175,27 @@ exports.login = async (req, res) => {
       isActive: isUserExist[0].dataValues.isActive,
     };
 
-    res.status(200).send({
-      status: "Success",
-      token,
-      data,
-    });
+    isUserExist.length !== 0 &&
+      isUserExist[0].dataValues.isActive == true &&
+      bcrypt.compare(
+        password,
+        isUserExist[0].dataValues.password,
+        async function (err, result) {
+          (!result || err) &&
+            res.status(400).send({
+              status: "Error",
+              message: "Email or Username or Password incorrect",
+            });
+
+          result &&
+            res.status(200).send({
+              status: "Success",
+              message: "Login Success",
+              token,
+              data,
+            });
+        }
+      );
   } catch (error) {
     res.status(400).send({
       status: "Error",

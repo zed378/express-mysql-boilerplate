@@ -1,4 +1,4 @@
-const { Users, Status, Platform } = require("../../models");
+const { Users, Status, Platform, Service } = require("../../models");
 const { Op } = require("sequelize");
 const { Up, Down } = require("../../config/migrate");
 
@@ -146,6 +146,130 @@ exports.seeding = async (req, res) => {
           },
         ]);
       })
+      .then(() => {
+        Service.bulkCreate([
+          {
+            name: "Prototyping Web or App Interface",
+            svcId: "UIUX",
+            svc_num: 1,
+          },
+          {
+            name: "Design User Experience for Web or App",
+            svcId: "UIUX",
+            svc_num: 2,
+          },
+          {
+            name: "Profile / Personal Website",
+            svcId: "STW",
+            svc_num: 1,
+          },
+          {
+            name: "Company Profile",
+            svcId: "STW",
+            svc_num: 2,
+          },
+          {
+            name: "Landing Page",
+            svcId: "STW",
+            svc_num: 3,
+          },
+          {
+            name: "Portofolio Website",
+            svcId: "STW",
+            svc_num: 4,
+          },
+          {
+            name: "Wedding Invitation",
+            svcId: "STW",
+            svc_num: 5,
+          },
+          {
+            name: "Front End Bug Fixing",
+            svcId: "FIX",
+            svc_num: 1,
+          },
+          {
+            name: "Back End Bug Fixing",
+            svcId: "FIX",
+            svc_num: 2,
+          },
+          {
+            name: "Fullstack Bug Fixing",
+            svcId: "FIX",
+            svc_num: 3,
+          },
+          {
+            name: "Simple CRUD APP",
+            svcId: "WAPP",
+            svc_num: 1,
+          },
+          {
+            name: "Wedding Invitation With Wish And Congrats Section",
+            svcId: "WAPP",
+            svc_num: 2,
+          },
+          {
+            name: "E-Commerce App",
+            svcId: "WAPP",
+            svc_num: 3,
+          },
+          {
+            name: "Internal Tools",
+            svcId: "WAPP",
+            svc_num: 4,
+          },
+          {
+            name: "Custom Complex Web App",
+            svcId: "WAPP",
+            svc_num: 5,
+          },
+          {
+            name: "Slicing Design Into Code",
+            svcId: "FE",
+            svc_num: 1,
+          },
+          {
+            name: "Simple Back End Development",
+            svcId: "BE",
+            svc_num: 1,
+          },
+          {
+            name: "Complex Back End Development",
+            svcId: "BE",
+            svc_num: 2,
+          },
+          {
+            name: "Add Feature(s) to Existing App",
+            svcId: "FEAT",
+            svc_num: 1,
+          },
+          {
+            name: "Upgrade App Dependencies to Latest Version",
+            svcId: "MNT",
+            svc_num: 1,
+          },
+          {
+            name: "Migrate Existing App to Latest Tech Stack",
+            svcId: "MNT",
+            svc_num: 2,
+          },
+          {
+            name: "Deploy App to Hosting",
+            svcId: "HOST",
+            svc_num: 1,
+          },
+          {
+            name: "Deploy App to VM",
+            svcId: "HOST",
+            svc_num: 2,
+          },
+          {
+            name: "Domain Name",
+            svcId: "DMN",
+            svc_num: 1,
+          },
+        ]);
+      })
       .then(() =>
         res.status(200).send({
           status: "Success",
@@ -208,6 +332,26 @@ exports.unseeding = async (req, res) => {
                 "Freelancer",
                 "Fiverr",
                 "Sribulancer",
+              ],
+            },
+          },
+        });
+      })
+      .then(() => {
+        Service.destroy({
+          where: {
+            svcId: {
+              [Op.in]: [
+                "UIUX",
+                "STW",
+                "FIX",
+                "WAPP",
+                "FE",
+                "BE",
+                "FEAT",
+                "MNT",
+                "HOST",
+                "DMN",
               ],
             },
           },

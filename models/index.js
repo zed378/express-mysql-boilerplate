@@ -4,6 +4,7 @@ const { Platform } = require("./platform");
 const { Approach } = require("./approach");
 const { Users } = require("./user");
 const { Invoice } = require("./invoice");
+const { Service } = require("./service");
 
 // define database relation
 Approach.belongsTo(Status, {
@@ -27,4 +28,12 @@ Invoice.belongsTo(Clients, {
   as: "company",
 });
 
-module.exports = { Users, Clients, Approach, Platform, Status, Invoice };
+module.exports = {
+  Users,
+  Clients,
+  Approach,
+  Platform,
+  Status,
+  Invoice,
+  Service,
+};
