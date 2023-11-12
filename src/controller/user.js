@@ -241,13 +241,14 @@ exports.setIsActive = async (req, res) => {
 exports.updateUserFullName = async (req, res) => {
   try {
     const role = req.user.role;
-    const { id, firstName, lastName } = req.body;
+    const { id, firstName, lastName, username } = req.body;
 
     if (role === "SYS" || role === "ADMIN" || id === req.user.id) {
       await Users.update(
         {
           firstName,
           lastName,
+          username,
         },
         { where: { id } }
       ).then(() => {
