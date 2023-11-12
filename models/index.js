@@ -27,6 +27,10 @@ Invoice.belongsTo(Clients, {
   foreignKey: "companyId",
   as: "company",
 });
+Invoice.belongsTo(Users, {
+  foreignKey: "userId",
+  as: "user",
+});
 
 module.exports = {
   Users,

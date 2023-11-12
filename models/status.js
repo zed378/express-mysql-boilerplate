@@ -21,6 +21,7 @@ const Status = db.define(
         "PROJECT DONE",
         "INVOICE SENT",
         "LAST PAYMENT DONE",
+        "REJECTED",
       ],
       unique: true,
     },

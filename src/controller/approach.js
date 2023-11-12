@@ -190,7 +190,7 @@ exports.getAllUserApproach = async (req, res) => {
 
 exports.filteredApproach = async (req, res) => {
   try {
-    const { statusId } = req.body;
+    const { statusId } = req.query;
     const role = req.user.role;
 
     if (role === "SYS" || role === "ADMIN" || role === "MARKETING") {

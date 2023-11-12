@@ -420,32 +420,56 @@ exports.verify = async (req, res) => {
   try {
     const id = req.user.id;
 
-    const dataUser = await Users.findOne({
+    await Users.findOne({
       where: {
         id,
       },
       attributes: {
-        exclude: ["createdAt", "updatedAt", "password"],
+        exclude: ["createdAt", "updatedAt", "password", "otp", "otpToken"],
       },
-    });
+    }).then((data) => {
+      console.log(data?.id);
+      const token = jwt.sign(
+        {
+          id: data.id,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          email: data.email,
+          role: data.role,
+        },
+        secret,
+        {
+          expiresIn: 60 * 60 * 24 * 2,
+        }
+      );
 
-    if (!dataUser) {
-      return res.status(404).send({
-        status: "Failed",
-        message: "Your token is invalid.",
-      });
-    }
+      const datas = {
+        id: data.id,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        role: data.role,
+        username: data.username,
+        picture: data.picture,
+        isActive: data.isActive,
+      };
 
-    res.send({
-      status: "Success",
-      user: {
-        id: dataUser.id,
-        name: dataUser.firstName + " " + dataUser.lastName,
-        email: dataUser.email,
-      },
+      data &&
+        res.status(200).send({
+          status: "Success",
+          message: "Success verify token and refreshed token",
+          token,
+          data: datas,
+        });
+
+      !data &&
+        res.status(404).send({
+          status: "Failed",
+          message: "You're not registered",
+        });
     });
   } catch (error) {
-    res.status({
+    res.status(200).send({
       status: "Failed",
       message: error.message,
     });

@@ -44,6 +44,55 @@ exports.getAllUser = async (req, res) => {
   }
 };
 
+exports.filterdUserByRole = async (req, res) => {
+  try {
+    const { role } = req.body;
+    const userRole = req.user.role;
+
+    if (userRole === "SYS" || userRole === "ADMIN") {
+      const data = await Users.findAndCountAll({
+        where: { role },
+        attributes: {
+          exclude: ["password", "updatedAt", "otp", "otpToken", "token"],
+        },
+        order: [["createdAt", "DESC"]],
+      });
+
+      const newData = data.rows.map((item) => {
+        const name = item.firstName + " " + item.lastName;
+        return {
+          id: item.id,
+          name,
+          username: item.username,
+          firstName: item.firstName,
+          lastName: item.lastName,
+          email: item.email,
+          picture: item.picture,
+          role: item.role,
+          isActive: item.isActive,
+          join: item.createdAt,
+        };
+      });
+
+      res.status(200).send({
+        status: "Success",
+        total: data.count,
+        data: newData,
+      });
+    } else {
+      res.status(400).send({
+        status: "Error",
+        message: "You have no rights to access the data",
+      });
+    }
+  } catch (error) {
+    res.status(400).send({
+      status: "Error",
+      message: error.message,
+    });
+  }
+};
+
 exports.getUser = async (req, res) => {
   try {
     const { id } = req.params;
@@ -181,6 +230,63 @@ exports.setIsActive = async (req, res) => {
           status: "Error",
           message: "Access Denied",
         });
+  } catch (error) {
+    res.status(400).send({
+      status: "Error",
+      message: error.message,
+    });
+  }
+};
+
+exports.updateUserFullName = async (req, res) => {
+  try {
+    const role = req.user.role;
+    const { id, firstName, lastName } = req.body;
+
+    if (role === "SYS" || role === "ADMIN" || id === req.user.id) {
+      await Users.update(
+        {
+          firstName,
+          lastName,
+        },
+        { where: { id } }
+      ).then(() => {
+        res.status(200).send({
+          status: "Success",
+          message: "User successfully updated",
+        });
+      });
+    } else {
+      res.status(400).send({
+        status: "Error",
+        message: "You have no rights to access the data",
+      });
+    }
+  } catch (error) {
+    res.status(400).send({
+      status: "Error",
+      message: error.message,
+    });
+  }
+};
+
+exports.deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const role = req.user.role;
+    if (role === "SYS" || role === "ADMIN") {
+      await Users.destroy({ where: { id } }).then(() => {
+        res.status(200).send({
+          status: "Success",
+          message: "User successfully deleted",
+        });
+      });
+    } else {
+      res.status(400).send({
+        status: "Error",
+        message: "You have no rights to access the data",
+      });
+    }
   } catch (error) {
     res.status(400).send({
       status: "Error",

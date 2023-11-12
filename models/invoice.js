@@ -51,6 +51,9 @@ const Invoice = db.define(
       type: DataTypes.STRING,
       unique: true,
     },
+    userId: {
+      type: DataTypes.STRING,
+    },
     createdAt: {
       type: DataTypes.DATE,
       defaultValue: Sequelize.NOW,

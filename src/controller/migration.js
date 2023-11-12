@@ -96,6 +96,10 @@ exports.seeding = async (req, res) => {
             id: "91d7f612-55c2-425c-aea9-c935cd399490",
             name: "LAST PAYMENT DONE",
           },
+          {
+            id: "58c091bc-c3cc-4dd8-a4f7-f6cbcb41a40f",
+            name: "REJECTED",
+          },
         ]);
       })
       .then(() => {
@@ -311,6 +315,7 @@ exports.unseeding = async (req, res) => {
                 "PROJECT DONE",
                 "INVOICE SENT",
                 "LAST PAYMENT DONE",
+                "REJECTED",
               ],
             },
           },

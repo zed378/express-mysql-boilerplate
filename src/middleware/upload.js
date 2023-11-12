@@ -5,7 +5,7 @@ exports.profileImg = (img) => {
   const storage = multer.diskStorage({
     destination: (req, file, cb) => {
       // folder name to store artist image
-      cb(null, "uploads");
+      cb(null, "uploads/profile");
     },
     filename: (req, file, cb) => {
       // rename file upload with adding date as a firstname
