@@ -1,5 +1,8 @@
 const { Users } = require("../../models");
 const { delImg } = require("../middleware/deleteImage");
+const bcrypt = require("bcrypt");
+const saltRounds = 12;
+
 const Joi = require("joi");
 const inputValidation = Joi.object({
   id: Joi.string().min(3),
@@ -14,21 +17,31 @@ exports.getAllUser = async (req, res) => {
     if (role === "SYS" || role === "ADMIN") {
       const data = await Users.findAndCountAll({
         attributes: {
-          exclude: [
-            "password",
-            "updatedAt",
-            "createdAt",
-            "otp",
-            "otpToken",
-            "token",
-          ],
+          exclude: ["password", "updatedAt", "otp", "otpToken", "token"],
         },
+        order: [["createdAt", "DESC"]],
+      });
+
+      const newData = data.rows.map((item) => {
+        const name = item.firstName + " " + item.lastName;
+        return {
+          id: item.id,
+          name,
+          username: item.username,
+          firstName: item.firstName,
+          lastName: item.lastName,
+          email: item.email,
+          picture: item.picture,
+          role: item.role,
+          isActive: item.isActive,
+          join: item.createdAt,
+        };
       });
 
       res.status(200).send({
         status: "Success",
         total: data.count,
-        data: data.rows,
+        data: newData,
       });
     } else {
       res.status(400).send({
@@ -257,6 +270,97 @@ exports.updateUserFullName = async (req, res) => {
           message: "User successfully updated",
         });
       });
+    } else {
+      res.status(400).send({
+        status: "Error",
+        message: "You have no rights to access the data",
+      });
+    }
+  } catch (error) {
+    res.status(400).send({
+      status: "Error",
+      message: error.message,
+    });
+  }
+};
+
+exports.updateRole = async (req, res) => {
+  try {
+    const role = req.user.role;
+    const { id, newRole } = req.body;
+
+    if (role === "SYS" || role === "ADMIN") {
+      await Users.update(
+        {
+          role: newRole,
+        },
+        { where: { id } }
+      ).then(() => {
+        res.status(200).send({
+          status: "Success",
+          message: "User role successfully updated",
+        });
+      });
+    } else {
+      res.status(400).send({
+        status: "Error",
+        message: "You have no rights to access the data",
+      });
+    }
+  } catch (error) {
+    res.status(400).send({
+      status: "Error",
+      message: error.message,
+    });
+  }
+};
+
+exports.createUser = async (req, res) => {
+  try {
+    const role = req.user.role;
+    const { roles, firstName, lastName, username, email, password } = req.body;
+
+    if (role === "SYS" || role === "ADMIN") {
+      const isUserExist = await Users.findOne({
+        where: {
+          email,
+        },
+      });
+
+      isUserExist &&
+        res.status(400).send({
+          status: "Error",
+          message: "You already registered",
+        });
+
+      !isUserExist &&
+        bcrypt.genSalt(saltRounds, (err, salt) => {
+          !err &&
+            bcrypt.hash(password, salt, async (err, hashed) => {
+              !err &&
+                Users.create({
+                  firstName,
+                  lastName,
+                  email,
+                  username,
+                  password: hashed,
+                  role: roles,
+                  isActive: true,
+                })
+                  .then(() => {
+                    res.status(200).send({
+                      status: "Success",
+                      message: "Successfully create new user",
+                    });
+                  })
+                  .catch((err) => {
+                    res.status(400).send({
+                      status: "Error",
+                      message: err.message,
+                    });
+                  });
+            });
+        });
     } else {
       res.status(400).send({
         status: "Error",
