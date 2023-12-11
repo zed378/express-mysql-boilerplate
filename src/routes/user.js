@@ -9,6 +9,7 @@ const {
   getAllUser,
   filterdUserByRole,
   getUser,
+  checkUsername,
   setIsActive,
   createUser,
   updateRole,
@@ -21,6 +22,7 @@ router.post("/filtered", auth, filterdUserByRole);
 router.get("/:id", auth, getUser);
 router.post("/add", auth, createUser);
 router.post("/username", auth, updateUserName);
+router.post("/checkname", auth, checkUsername);
 router.post("/profile", auth, profileImg("picture"), updatePict);
 router.post("/set-status", auth, setIsActive);
 router.post("/set-role", auth, updateRole);

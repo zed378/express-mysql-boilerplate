@@ -131,7 +131,7 @@ exports.login = async (req, res) => {
         [Op.or]: [{ username: user }, { email: user }],
       },
       attributes: {
-        exclude: ["createdAt", "updatedAt"],
+        exclude: ["updatedAt"],
       },
     });
 
@@ -173,6 +173,7 @@ exports.login = async (req, res) => {
       username: isUserExist[0].dataValues.username,
       picture: isUserExist[0].dataValues.picture,
       isActive: isUserExist[0].dataValues.isActive,
+      join: isUserExist[0].dataValues.createdAt,
     };
 
     isUserExist.length !== 0 &&
@@ -241,6 +242,7 @@ exports.sendOTP = async (req, res) => {
         message: error.details[0].message,
       });
     }
+
     function getRandomInt() {
       return Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
     }
@@ -332,19 +334,18 @@ exports.resetPassword = async (req, res) => {
 
     isUserExist &&
       jwt.verify(isUserExist.otpToken, secret, async (err, decoded) => {
-        err &&
-          (
-            await Users.update(
-              { otp: 101010, otpToken: null },
-              {
-                where: { id: isUserExist.id },
-              }
-            )
+        if (err) {
+          await Users.update(
+            { otp: 101010, otpToken: null },
+            {
+              where: { id: isUserExist.id },
+            }
           ).then(() => {
             return res.status(400).send({
               message: "Expired OTP",
             });
           });
+        }
 
         if (!err) {
           otp === 101010 &&
@@ -425,7 +426,7 @@ exports.verify = async (req, res) => {
         id,
       },
       attributes: {
-        exclude: ["createdAt", "updatedAt", "password", "otp", "otpToken"],
+        exclude: ["updatedAt", "password", "otp", "otpToken"],
       },
     }).then((data) => {
       console.log(data?.id);
@@ -452,6 +453,7 @@ exports.verify = async (req, res) => {
         username: data.username,
         picture: data.picture,
         isActive: data.isActive,
+        join: data.createdAt,
       };
 
       data &&

@@ -6,8 +6,13 @@ const saltRounds = 12;
 const Joi = require("joi");
 const inputValidation = Joi.object({
   id: Joi.string().min(3),
+  firstName: Joi.string().min(3),
+  lastName: Joi.string().min(3),
   username: Joi.string().min(3),
   picture: Joi.string().min(3),
+  role: Joi.string().min(2),
+  email: Joi.string().email().min(3),
+  password: Joi.string().min(6),
 });
 
 exports.getAllUser = async (req, res) => {
@@ -144,6 +149,35 @@ exports.getUser = async (req, res) => {
   }
 };
 
+exports.checkUsername = async (req, res) => {
+  try {
+    const { username } = req.body;
+
+    await Users.findOne({
+      where: {
+        username,
+      },
+    }).then((data) => {
+      data &&
+        res.status(200).send({
+          status: "Success",
+          message: "already taken",
+        });
+
+      !data &&
+        res.status(200).send({
+          status: "Success",
+          message: "is availabe",
+        });
+    });
+  } catch (error) {
+    res.status(400).send({
+      status: "Error",
+      message: error.message,
+    });
+  }
+};
+
 exports.updateUserName = async (req, res) => {
   try {
     const { id, username } = req.body;
@@ -207,16 +241,27 @@ exports.updatePict = async (req, res) => {
     const isUserExist = await Users.findOne({ where: { id } });
 
     if (isUserExist) {
-      delImg(isUserExist.picture);
+      delImg("profile/" + isUserExist.picture);
       await Users.update(
         { picture },
         {
           where: { id },
         }
       ).then(() => {
+        const val = isUserExist.dataValues;
         res.status(200).send({
           status: "Success",
           message: "Success update profile picture",
+          data: {
+            id: val.id,
+            firstName: val.firstName,
+            lastName: val.lastName,
+            name: val.firstName + " " + val.lastName,
+            email: val.email,
+            picture: val.picture,
+            role: val.role,
+            isActive: val.isActive,
+          },
         });
       });
     }
@@ -256,7 +301,22 @@ exports.updateUserFullName = async (req, res) => {
     const role = req.user.role;
     const { id, firstName, lastName, username } = req.body;
 
+    const { error } = inputValidation.validate({
+      id,
+      username,
+      firstName,
+      lastName,
+    });
+
+    if (error) {
+      return res.send({
+        status: "Error",
+        message: error.details[0].message,
+      });
+    }
+
     if (role === "SYS" || role === "ADMIN" || id === req.user.id) {
+      const isUserExist = await Users.findOne({ where: { id } });
       await Users.update(
         {
           firstName,
@@ -265,9 +325,20 @@ exports.updateUserFullName = async (req, res) => {
         },
         { where: { id } }
       ).then(() => {
+        const val = isUserExist.dataValues;
         res.status(200).send({
           status: "Success",
-          message: "User successfully updated",
+          message: "Success update profile",
+          data: {
+            id: val.id,
+            firstName: val.firstName,
+            lastName: val.lastName,
+            name: val.firstName + " " + val.lastName,
+            email: val.email,
+            picture: val.picture,
+            role: val.role,
+            isActive: val.isActive,
+          },
         });
       });
     } else {
@@ -288,6 +359,18 @@ exports.updateRole = async (req, res) => {
   try {
     const role = req.user.role;
     const { id, newRole } = req.body;
+
+    const { error } = inputValidation.validate({
+      id,
+      role: newRole,
+    });
+
+    if (error) {
+      return res.send({
+        status: "Error",
+        message: error.details[0].message,
+      });
+    }
 
     if (role === "SYS" || role === "ADMIN") {
       await Users.update(
@@ -319,6 +402,22 @@ exports.createUser = async (req, res) => {
   try {
     const role = req.user.role;
     const { roles, firstName, lastName, username, email, password } = req.body;
+
+    const { error } = inputValidation.validate({
+      firstName,
+      lastName,
+      username,
+      email,
+      password,
+      role: roles,
+    });
+
+    if (error) {
+      return res.send({
+        status: "Error",
+        message: error.details[0].message,
+      });
+    }
 
     if (role === "SYS" || role === "ADMIN") {
       const isUserExist = await Users.findOne({
@@ -379,6 +478,18 @@ exports.deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
     const role = req.user.role;
+
+    const { error } = inputValidation.validate({
+      id,
+    });
+
+    if (error) {
+      return res.send({
+        status: "Error",
+        message: error.details[0].message,
+      });
+    }
+
     if (role === "SYS" || role === "ADMIN") {
       await Users.destroy({ where: { id } }).then(() => {
         res.status(200).send({
