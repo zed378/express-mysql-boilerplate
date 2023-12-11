@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 
 exports.delImg = (filePath) => {
-  if (filePath !== "default.svg") {
+  if (filePath !== "profile/default.svg") {
     filePath = path.join(__dirname, "../../uploads/", filePath);
 
     fs.unlink(filePath, (err) => {
