@@ -12,7 +12,7 @@ const Clients = db.define(
     company_num: {
       type: DataTypes.INTEGER,
       unique: true,
-      autoIncrement: true,
+      // autoIncrement: true,
     },
     company_id: {
       type: DataTypes.STRING,

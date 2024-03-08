@@ -10,6 +10,7 @@ async function Connection() {
       status: "DB Connection Failed",
       message: error,
     });
+    await db.authenticate();
   }
 }
 

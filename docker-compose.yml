@@ -1,0 +1,75 @@
+version: "3.9"
+name: webcompose-be
+
+services:
+  app:
+    image: zed378/webcompose-db:latest
+    container_name: webcompose_be
+    restart: always
+    ports:
+      - 5000:5000
+    volumes:
+      - ./uploads:/app/uploads
+    environment:
+      # Make sure your port same as port above
+      PORT: 5000
+      SECRET: 425r6@!gHT26
+
+      # BE host and FE host
+      HOST_URL: webcompose_be
+      FE_URL: https://webcompose.id/login
+
+      # DB Configuration for mysql
+      # DB_PORT: 3306
+      # DB_HOST: mysql
+      # DB_USER: webcompose
+      # DB_PASS: webcompose
+      # DB_NAME: webcompose
+      # DB_DIALECT: mysql
+
+      # DB Configuration for postgres
+      DB_PORT: 5432
+      DB_HOST: postgresql
+      DB_USER: webcompose
+      DB_PASS: 2wsx1qaz
+      DB_NAME: webcompose
+      DB_DIALECT: postgres
+
+      # mail setting
+      # MAIL_USER: your@mail.com
+      # MAIL_PASSWORD: "your_pass"
+      # MAIL_HOST: host.mail.com
+
+    depends_on:
+      - mysql
+      - postgresql
+
+  postgresql:
+    image: postgres
+    container_name: postgresql
+    restart: always
+    ports:
+      - 5432:5432
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: 2wsx1qaz
+      POSTGRES_USER: webcompose
+      POSTGRES_DB: webcompose
+      PGDATA: /var/lib/postgresql/data/pgdata
+
+  mysql:
+    image: mysql
+    container_name: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    ports:
+      - 33062:3306
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: Evazed123!@#
+      MYSQL_DATABASE: webcompose
+      MYSQL_USER: webcompose
+      MYSQL_PASSWORD: webcompose
+      MYSQL_PORT: 3306

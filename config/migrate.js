@@ -2,6 +2,10 @@ const { db } = require("./");
 
 async function Up() {
   try {
+    process.env.DB_DIALECT === "mysql" &&
+      (await db.query("CREATE DATABASE IF NOT EXISTS webcompose", {
+        raw: true,
+      }));
     db.sync({ alter: true });
     console.log("Database Synced");
   } catch (error) {

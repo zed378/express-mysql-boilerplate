@@ -24,9 +24,11 @@
     "jsonwebtoken": "^9.0.2",
     "multer": "^1.4.5-lts.1",
     "mustache": "^4.2.0",
-    "mysql2": "^3.6.1",
+    "mysql2": "^3.9.2",
     "node-format-date": "^1.0.9",
     "nodemailer": "^6.9.6",
+    "pg": "^8.11.3",
+    "pg-hstore": "^2.3.4",
     "romanum": "^1.0.1",
     "sequelize": "^6.33.0",
     "xss-clean": "^0.1.4"
