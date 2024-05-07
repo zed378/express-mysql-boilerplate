@@ -288,8 +288,8 @@ exports.sendOTP = async (req, res) => {
       to: email,
       subject: "OTP for reset password",
       html: mustache.render(templateOTP, {
-        firstName: isUserExist?.firstName,
-        lastName: isUserExist?.lastName,
+        firstName: isUserExist?.dataValues?.firstName,
+        lastName: isUserExist?.dataValues?.lastName,
         otp: otp,
       }),
     };
