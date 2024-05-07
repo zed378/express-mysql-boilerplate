@@ -209,17 +209,26 @@ exports.activation = async (req, res) => {
   try {
     const { p } = req.query;
 
-    const isUserExist = await Users.update(
-      { isActive: true },
-      { where: { id: p } }
-    );
+    const isActive = await Users.findOne({ where: { id: p } });
 
-    isUserExist[0] === 1 && res.status(200).redirect(process.env.FE_URL);
-    isUserExist[0] === 0 &&
+    if (!isActive.dataValues.isActive) {
+      const isUserExist = await Users.update(
+        { isActive: true },
+        { where: { id: p } }
+      );
+
+      isUserExist[0] === 1 && res.status(200).redirect(process.env.FE_URL);
+      isUserExist[0] === 0 &&
+        res.status(400).send({
+          status: "Error",
+          message: "Your account failed to activate",
+        });
+    } else {
       res.status(400).send({
         status: "Error",
-        message: "Your account failed to activate",
+        message: "You already activate your account!",
       });
+    }
   } catch (error) {
     res.status(400).send({
       status: "Error",
