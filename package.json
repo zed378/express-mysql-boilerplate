@@ -31,7 +31,6 @@
     "pg": "^8.11.3",
     "pg-hstore": "^2.3.4",
     "romanum": "^1.0.1",
-    "rotating-file-stream": "^3.2.3",
     "sequelize": "^6.33.0",
     "xss-clean": "^0.1.4"
   },

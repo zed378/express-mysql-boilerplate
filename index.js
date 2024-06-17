@@ -2,19 +2,21 @@ const express = require("express");
 require("dotenv").config();
 const cors = require("cors");
 const { Connection } = require("./config/connection");
+const { ensureFolderExisted } = require("./src/middleware/createFolder");
 
 const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
 const xss = require("xss-clean");
 
 // log
-const rfs = require("rotating-file-stream");
+const fs = require("fs");
 const path = require("path");
 const morgan = require("morgan");
-const accessLogStream = rfs.createStream("access.log", {
-  interval: "1d",
-  path: path.join(__dirname, "log"),
+accessLogStream = fs.createWriteStream(path.join(__dirname, "log/access.log"), {
+  flags: "a",
 });
+
+ensureFolderExisted();
 
 // routes
 const authRoute = require("./src/routes/auth");
@@ -27,6 +29,7 @@ const statusRoute = require("./src/routes/status");
 const approachRoute = require("./src/routes/approach");
 const invRoutes = require("./src/routes/invoice");
 const svcRoutes = require("./src/routes/service");
+const { log } = require("console");
 
 const app = express();
 app.use(cors());

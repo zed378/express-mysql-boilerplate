@@ -63,7 +63,7 @@ exports.seeding = async (req, res) => {
         lastName: "System",
         email: "root@mail.com",
         password:
-          "$2a$12$mdoVdkD9S/n0jRkaBXcGk.gbf/CzKMcBJm.8sufIBvEF8s3YNaepq", // 123123
+          "$2b$12$e1ysT65hI0bzUhO5CgBwneK7xjp55Thre5cONKI.aWaPTcreiKHEe", // 123123
         isActive: true,
         role: "SYS",
       },
@@ -308,7 +308,13 @@ exports.unseeding = async (req, res) => {
   try {
     await Users.destroy({
       where: {
-        email: { [Op.in]: ["zawawi@webcompose.id", "eva@webcompose.id"] },
+        email: {
+          [Op.in]: [
+            "zawawi@webcompose.id",
+            "eva@webcompose.id",
+            "root@mail.com",
+          ],
+        },
       },
     })
       .then(() => {

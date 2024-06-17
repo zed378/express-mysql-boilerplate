@@ -172,6 +172,8 @@ exports.login = async (req, res) => {
       role: isUserExist[0].dataValues.role,
       username: isUserExist[0].dataValues.username,
       picture: isUserExist[0].dataValues.picture,
+      googlePic: isUserExist[0].dataValues.googleProfilePic,
+      googleID: isUserExist[0].dataValues.googleID,
       isActive: isUserExist[0].dataValues.isActive,
       join: isUserExist[0].dataValues.createdAt,
     };
@@ -479,6 +481,101 @@ exports.verify = async (req, res) => {
           message: "You're not registered",
         });
     });
+  } catch (error) {
+    res.status(200).send({
+      status: "Failed",
+      message: error.message,
+    });
+  }
+};
+
+exports.googleAuth = async (req, res) => {
+  try {
+    const { email, firstName, lastName, picture, googleID } = req.body;
+
+    const isUserExist = await Users.findOne({ where: { email } });
+
+    const token = jwt.sign(
+      {
+        id: isUserExist?.dataValues?.id,
+        firstName: isUserExist?.dataValues?.firstName,
+        lastName: isUserExist?.dataValues?.lastName,
+        email: isUserExist?.dataValues?.email,
+        role: isUserExist?.dataValues?.role,
+      },
+      secret,
+      {
+        expiresIn: 60 * 60 * 24 * 2,
+      }
+    );
+
+    const data = {
+      id: isUserExist?.dataValues?.id,
+      firstName: isUserExist?.dataValues?.firstName,
+      lastName: isUserExist?.dataValues?.lastName,
+      email: isUserExist?.dataValues?.email,
+      role: isUserExist?.dataValues?.role,
+      username: isUserExist?.dataValues?.username,
+      picture: isUserExist?.dataValues?.picture,
+      googlePic: isUserExist?.dataValues?.googleProfilePic,
+      googleID: isUserExist?.dataValues?.googleID,
+      isActive: isUserExist?.dataValues?.isActive,
+      join: isUserExist?.dataValues?.createdAt,
+    };
+
+    isUserExist &&
+      isUserExist?.dataValues?.isActive == true &&
+      res.status(200).send({
+        status: "Success",
+        message: "Login Success",
+        token,
+        data,
+      });
+
+    !isUserExist &&
+      (await Users.create({
+        firstName,
+        lastName,
+        email,
+        googleProfilePic: picture,
+        googleID,
+        isActive: true,
+      }).then((response) => {
+        const generateToken = jwt.sign(
+          {
+            id: response.id,
+            firstName: response.firstName,
+            lastName: response.lastName,
+            email: response.email,
+            role: response.role,
+          },
+          secret,
+          {
+            expiresIn: 60 * 60 * 24 * 2,
+          }
+        );
+
+        const generateData = {
+          id: response.id,
+          firstName: response.firstName,
+          lastName: response.lastName,
+          email: response.email,
+          role: response.role,
+          username: response.username,
+          picture: response.picture,
+          googlePic: response.googleProfilePic,
+          googleID: response.googleID,
+          isActive: response.isActive,
+          join: response.createdAt,
+        };
+
+        res.status(200).send({
+          status: "Success",
+          message: "Login Success",
+          token: generateToken,
+          data: generateData,
+        });
+      }));
   } catch (error) {
     res.status(200).send({
       status: "Failed",

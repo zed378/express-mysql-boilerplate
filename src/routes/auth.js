@@ -10,6 +10,7 @@ const {
   sendOTP,
   resetPassword,
   verify,
+  googleAuth,
 } = require("../controller/auth");
 
 router.post("/register", register);
@@ -18,5 +19,6 @@ router.get("/activation", activation);
 router.post("/otp", sendOTP);
 router.post("/reset", resetPassword);
 router.get("/verify", auth, verify);
+router.post("/google", googleAuth);
 
 module.exports = router;

@@ -45,6 +45,10 @@ const Users = db.define(
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
+    isBan: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
     otp: {
       type: DataTypes.INTEGER(6),
       defaultValue: 101010,
@@ -52,7 +56,18 @@ const Users = db.define(
     otpToken: {
       type: DataTypes.STRING,
     },
-
+    googleID: {
+      type: DataTypes.STRING,
+    },
+    googleAccessToken: {
+      type: DataTypes.STRING,
+    },
+    googleProfilePic: {
+      type: DataTypes.STRING,
+    },
+    googleTokenID: {
+      type: DataTypes.STRING,
+    },
     createdAt: {
       type: DataTypes.DATE,
       defaultValue: Sequelize.NOW,
