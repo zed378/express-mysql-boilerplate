@@ -7,9 +7,10 @@ services:
     container_name: webcompose_be
     restart: always
     ports:
-      - 5000:5000
+      - 5001:5000
     volumes:
       - ./uploads:/app/uploads
+      - ./log:/app/log
     environment:
       # Make sure your port same as port above
       PORT: 5000
@@ -20,20 +21,20 @@ services:
       FE_URL: https://webcompose.id/login
 
       # DB Configuration for mysql
-      # DB_PORT: 3306
-      # DB_HOST: mysql
-      # DB_USER: webcompose
-      # DB_PASS: webcompose
-      # DB_NAME: webcompose
-      # DB_DIALECT: mysql
+      DB_PORT: 3306
+      DB_HOST: mysql
+      DB_USER: webcompose
+      DB_PASS: webcompose
+      DB_NAME: webcompose
+      DB_DIALECT: mysql
 
       # DB Configuration for postgres
-      DB_PORT: 5432
-      DB_HOST: postgresql
-      DB_USER: webcompose
-      DB_PASS: 2wsx1qaz
-      DB_NAME: webcompose
-      DB_DIALECT: postgres
+      # DB_PORT: 5432
+      # DB_HOST: postgresql
+      # DB_USER: webcompose
+      # DB_PASS: 2wsx1qaz
+      # DB_NAME: webcompose
+      # DB_DIALECT: postgres
 
       # mail setting
       # MAIL_USER: your@mail.com
@@ -61,10 +62,9 @@ services:
   mysql:
     image: mysql
     container_name: mysql
-    command: --default-authentication-plugin=mysql_native_password
     restart: always
     ports:
-      - 33062:3306
+      - 3306:3306
     volumes:
       - ./data/mysql:/var/lib/mysql
     environment:
@@ -73,3 +73,19 @@ services:
       MYSQL_USER: webcompose
       MYSQL_PASSWORD: webcompose
       MYSQL_PORT: 3306
+      MYSQL_HOST: mysql
+
+  phpmyadmin:
+    image: phpmyadmin
+    container_name: phpmyadmin
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: Evazed123!@#
+      MYSQL_PASSWORD: Evazed123!@#
+      PMA_ARBITRARY: 1
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: Evazed123!@#
+    ports:
+      - 8080:80

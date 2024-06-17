@@ -1,8 +1,11 @@
 const { Approach, Status, Platform, Users, Clients } = require("../../models");
+const { Op } = require("sequelize");
 
 exports.getAllApproach = async (req, res) => {
   try {
-    const { p, limit } = req.body;
+    let { p, limit } = req.query;
+    limit = parseInt(limit);
+    p = parseInt(p);
     const role = req.user.role;
     let skip = p * limit - limit;
 
@@ -95,12 +98,14 @@ exports.getAllApproach = async (req, res) => {
 
 exports.getAllUserApproach = async (req, res) => {
   try {
-    const { p, limit } = req.body;
+    let { p, limit } = req.query;
+    limit = parseInt(limit);
+    p = parseInt(p);
     const role = req.user.role;
     const userId = req.user.id;
     let skip = p * limit - limit;
 
-    if (role === "ADMIN" || role === "MARKETING") {
+    if (role === "SYS" || role === "ADMIN" || role === "MARKETING") {
       const data = await Approach.findAndCountAll({
         where: { userId },
         attributes: {
@@ -533,4 +538,47 @@ exports.changeStatus = async (req, res) => {
       message: error.message,
     });
   }
+};
+
+exports.filteredByDateRangeAndStatus = async (req, res) => {
+  try {
+    const { statusId, startDate, endDate } = req.body;
+    let { p, limit } = req.query;
+    limit = parseInt(limit);
+    p = parseInt(p);
+    const role = req.user.role;
+    console.log(statusId);
+
+    if (role === "SYS" || role === "ADMIN" || role === "MARKETING") {
+      await Approach.findAndCountAll({
+        where: {
+          statusId,
+          createdAt: { [Op.and]: { [Op.lte]: endDate, [Op.gte]: startDate } },
+        },
+      }).then((data) => {
+        res
+          .status(200)
+          .send({
+            status: "Success",
+            message: "Success get data by dates range",
+            data,
+          });
+      });
+    } else {
+      res.status(400).send({
+        status: "Error",
+        message: "You have no rights to access the data",
+      });
+    }
+  } catch (error) {
+    res.status(400).send({
+      status: "Error",
+      message: error.message,
+    });
+  }
+};
+
+exports.filteredByCompanyName = async (req, res) => {
+  try {
+  } catch (error) {}
 };

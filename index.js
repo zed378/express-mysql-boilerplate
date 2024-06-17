@@ -7,6 +7,15 @@ const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
 const xss = require("xss-clean");
 
+// log
+const rfs = require("rotating-file-stream");
+const path = require("path");
+const morgan = require("morgan");
+const accessLogStream = rfs.createStream("access.log", {
+  interval: "1d",
+  path: path.join(__dirname, "log"),
+});
+
 // routes
 const authRoute = require("./src/routes/auth");
 const migrateROute = require("./src/routes/migrate");
@@ -29,8 +38,8 @@ app.use("/uploads", express.static("uploads"));
 app.use("/static", express.static("src/static"));
 app.set("trust proxy", 1);
 const limiter = rateLimit({
-  windowMs: 5 * 60 * 1000, // 15 minutes
-  max: 1000, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 1000, // Limit each IP to 1000 requests per `window` (here, per 15 minutes)
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 });
@@ -38,6 +47,7 @@ const limiter = rateLimit({
 // app.use(limiter);
 app.use(helmet());
 app.use(xss());
+app.use(morgan("combined", { stream: accessLogStream }));
 
 app.use("/auth", authRoute);
 app.use("/migrate", migrateROute);

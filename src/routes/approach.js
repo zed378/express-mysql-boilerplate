@@ -11,6 +11,7 @@ const {
   editApproach,
   deleteApproach,
   changeStatus,
+  filteredByDateRangeAndStatus,
 } = require("../controller/approach");
 
 router.get("/all", auth, getAllApproach);
@@ -21,5 +22,6 @@ router.post("/add", auth, createApproach);
 router.patch("/edit", auth, editApproach);
 router.delete("/del/:id", auth, deleteApproach);
 router.patch("/edit-status", auth, changeStatus);
+router.post("/filtered-result", auth, filteredByDateRangeAndStatus);
 
 module.exports = router;

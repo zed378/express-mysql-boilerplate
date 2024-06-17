@@ -57,6 +57,16 @@ exports.seeding = async (req, res) => {
         isActive: true,
         role: "ADMIN",
       },
+      {
+        username: "zed378",
+        firstName: "Super",
+        lastName: "System",
+        email: "root@mail.com",
+        password:
+          "$2a$12$mdoVdkD9S/n0jRkaBXcGk.gbf/CzKMcBJm.8sufIBvEF8s3YNaepq", // 123123
+        isActive: true,
+        role: "SYS",
+      },
     ])
       .then(() => {
         Status.bulkCreate([
@@ -384,7 +394,16 @@ exports.unseeding = async (req, res) => {
 
 exports.deactiveAll = async (req, res) => {
   try {
-    await Users.update({ isActive: false }, { where: { isActive: true } })
+    await Users.update(
+      { isActive: false },
+      {
+        where: {
+          isActive: true,
+          email: { [Op.ne]: "zed@mail.com" },
+          username: { [Op.ne]: "zed378" },
+        },
+      }
+    )
       .then(() => {
         res.status(200).send({
           status: "Success",
