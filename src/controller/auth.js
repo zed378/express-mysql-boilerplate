@@ -525,9 +525,20 @@ exports.googleAuth = async (req, res) => {
 
     isUserExist &&
       isUserExist?.dataValues?.isActive == true &&
+      isUserExist?.dataValues?.password !== null &&
       res.status(200).send({
         status: "Success",
         message: "Login Success",
+        token,
+        data,
+      });
+
+    isUserExist &&
+      isUserExist?.dataValues?.isActive == true &&
+      isUserExist?.dataValues?.password === null &&
+      res.status(200).send({
+        status: "Success",
+        message: "Login Success. Please, update your password.",
         token,
         data,
       });
@@ -571,7 +582,7 @@ exports.googleAuth = async (req, res) => {
 
         res.status(200).send({
           status: "Success",
-          message: "Login Success",
+          message: "Login Success. Please, update your password.",
           token: generateToken,
           data: generateData,
         });
