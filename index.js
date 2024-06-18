@@ -12,15 +12,30 @@ const xss = require("xss-clean");
 const fs = require("fs");
 const path = require("path");
 const morgan = require("morgan");
-accessLogStream = fs.createWriteStream(path.join(__dirname, "log/access.log"), {
-  flags: "a",
-});
+const moment = require("moment-timezone");
 
+// Ensure the log folder exists
 ensureFolderExisted();
 
-// routes
+// Create a write stream (in append mode) for logging
+const accessLogStream = fs.createWriteStream(
+  path.join(__dirname, "log/access.log"),
+  {
+    flags: "a",
+  }
+);
+
+// Define a custom token to format the timestamp in UTC+07:00
+morgan.token("custom-date", (req, res) => {
+  return moment().tz("Asia/Jakarta").format("DD/MMM/YYYY HH:mm:ss ZZ");
+});
+
+// Define a custom format based on the "combined" format but replace the date with the custom token
+const customFormat =
+  ':remote-addr - :remote-user [:custom-date] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"';
+
 const authRoute = require("./src/routes/auth");
-const migrateROute = require("./src/routes/migrate");
+const migrateRoute = require("./src/routes/migrate");
 const userRoute = require("./src/routes/user");
 const mailRoute = require("./src/routes/mail");
 const companyRoute = require("./src/routes/company");
@@ -29,17 +44,18 @@ const statusRoute = require("./src/routes/status");
 const approachRoute = require("./src/routes/approach");
 const invRoutes = require("./src/routes/invoice");
 const svcRoutes = require("./src/routes/service");
-const { log } = require("console");
+const categoryRoutes = require("./src/routes/category");
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// register upload paths
+// Register upload paths
 app.use("/uploads", express.static("uploads"));
 app.use("/static", express.static("src/static"));
 app.set("trust proxy", 1);
+
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 1000, // Limit each IP to 1000 requests per `window` (here, per 15 minutes)
@@ -50,10 +66,12 @@ const limiter = rateLimit({
 // app.use(limiter);
 app.use(helmet());
 app.use(xss());
-app.use(morgan("combined", { stream: accessLogStream }));
+
+// Use Morgan middleware with the custom format and log stream
+app.use(morgan(customFormat, { stream: accessLogStream }));
 
 app.use("/auth", authRoute);
-app.use("/migrate", migrateROute);
+app.use("/migrate", migrateRoute);
 app.use("/user", userRoute);
 app.use("/mail", mailRoute);
 app.use("/company", companyRoute);
@@ -62,6 +80,8 @@ app.use("/status", statusRoute);
 app.use("/approach", approachRoute);
 app.use("/inv", invRoutes);
 app.use("/svc", svcRoutes);
+app.use("/category", categoryRoutes);
+
 app.get("/", (req, res) => {
   res.send({
     status: "Success",

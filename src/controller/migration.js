@@ -344,7 +344,7 @@ exports.unseeding = async (req, res) => {
               [Op.in]: [
                 "WhatsApp",
                 "Telegram",
-                "Instgram",
+                "Instagram",
                 "Facebook",
                 "Twitter",
                 "LinkedIn",

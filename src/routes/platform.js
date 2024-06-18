@@ -11,7 +11,7 @@ const {
   deletePlatform,
 } = require("../controller/platform");
 
-router.get("/all", auth, getAllPlatform);
+router.post("/all", auth, getAllPlatform);
 router.get("/alls", auth, getPlatforms);
 router.get("/:id", auth, getPlatform);
 router.post("/add", auth, createPlatform);

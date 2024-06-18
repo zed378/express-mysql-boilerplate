@@ -11,6 +11,7 @@ const {
   resetPassword,
   verify,
   googleAuth,
+  justUpdatePassword,
 } = require("../controller/auth");
 
 router.post("/register", register);
@@ -20,5 +21,6 @@ router.post("/otp", sendOTP);
 router.post("/reset", resetPassword);
 router.get("/verify", auth, verify);
 router.post("/google", googleAuth);
+router.post("/update-pass", justUpdatePassword);
 
 module.exports = router;

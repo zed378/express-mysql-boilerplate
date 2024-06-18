@@ -11,6 +11,7 @@ const mysql = {
   dialect,
   host,
   port,
+  timezone: "+07:00",
   username: user,
   password: pass,
   database: dbName,
@@ -23,6 +24,7 @@ const pg = {
   username: user,
   password: pass,
   database: dbName,
+  timezone: "+07:00",
   dialectOptions: {
     ssl: false,
   },

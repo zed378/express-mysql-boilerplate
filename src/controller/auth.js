@@ -588,7 +588,36 @@ exports.googleAuth = async (req, res) => {
         });
       }));
   } catch (error) {
-    res.status(200).send({
+    res.status(400).send({
+      status: "Failed",
+      message: error.message,
+    });
+  }
+};
+
+exports.justUpdatePassword = async (req, res) => {
+  try {
+    const { id, password } = req.body;
+
+    const isUserExist = await Users.findOne({ where: { id } });
+
+    isUserExist &&
+      bcrypt.genSalt(saltRounds, (err, salt) => {
+        bcrypt.hash(password, salt, async (err, hashed) => {
+          await Users.update({ password: hashed }, { where: { id } }).then(
+            (response) => {
+              res
+                .status(200)
+                .send({
+                  status: "Success",
+                  message: "Success update password",
+                });
+            }
+          );
+        });
+      });
+  } catch (error) {
+    res.status(400).send({
       status: "Failed",
       message: error.message,
     });

@@ -8,6 +8,7 @@ exports.ensureFolderExisted = () => {
   const documentFolder = path.join(rootDir, "uploads/document");
   const invoiceFolder = path.join(rootDir, "uploads/invoice");
   const reportFolder = path.join(rootDir, "uploads/report");
+  const logFolder = path.join(rootDir, "log");
 
   // Check if document folder exists or not
   if (!fs.existsSync(documentFolder)) {
@@ -31,5 +32,13 @@ exports.ensureFolderExisted = () => {
     console.log("Report folder created.");
   } else {
     console.log("Report folder existed.");
+  }
+
+  // Check if log folder exists or not
+  if (!fs.existsSync(logFolder)) {
+    fs.mkdirSync(logFolder, { recursive: true });
+    console.log("Log folder created.");
+  } else {
+    console.log("Log folder existed.");
   }
 };

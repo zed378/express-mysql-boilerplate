@@ -7,7 +7,7 @@ services:
     container_name: webcompose_be
     restart: always
     ports:
-      - 5000:5000
+      - 5001:5000
     volumes:
       - ./uploads:/app/uploads
       - ./log:/app/log
@@ -32,7 +32,7 @@ services:
       # DB_PORT: 5432
       # DB_HOST: postgresql
       # DB_USER: webcompose
-      # DB_PASS: 2wsx1qaz
+      # DB_PASS: Evazed123!@#
       # DB_NAME: webcompose
       # DB_DIALECT: postgres
 
@@ -43,21 +43,21 @@ services:
 
     depends_on:
       - mysql
-      - postgresql
+      # - postgresql
 
-  postgresql:
-    image: postgres
-    container_name: postgresql
-    restart: always
-    ports:
-      - 5432:5432
-    volumes:
-      - ./data/postgres:/var/lib/postgresql/data
-    environment:
-      POSTGRES_PASSWORD: 2wsx1qaz
-      POSTGRES_USER: webcompose
-      POSTGRES_DB: webcompose
-      PGDATA: /var/lib/postgresql/data/pgdata
+  # postgresql:
+  #   image: postgres
+  #   container_name: postgresql
+  #   restart: always
+  #   ports:
+  #     - 5432:5432
+  #   volumes:
+  #     - ./data/postgres:/var/lib/postgresql/data/pgdata
+  #   environment:
+  #     POSTGRES_PASSWORD: Evazed123!@#
+  #     POSTGRES_USER: webcompose
+  #     POSTGRES_DB: webcompose
+  #     PGDATA: /var/lib/postgresql/data/pgdata
 
   mysql:
     image: mysql
@@ -75,6 +75,8 @@ services:
       MYSQL_PORT: 3306
       MYSQL_HOST: mysql
 
+  # Uncomment service below if you want to manage mysql
+  # It automatically setup.
   phpmyadmin:
     image: phpmyadmin
     container_name: phpmyadmin
@@ -89,3 +91,34 @@ services:
       PMA_PASSWORD: Evazed123!@#
     ports:
       - 8080:80
+    depends_on:
+      - mysql
+
+  # Uncomment service below if you want manage postgres
+  # you need to manual setup to connect to database
+  # pgadmin:
+  #   image: dpage/pgadmin4
+  #   container_name: pgadmin
+  #   restart: always
+  #   ports:
+  #     - "8888:80"
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: zed@mail.com
+  #     PGADMIN_DEFAULT_PASSWORD: Evazed123!@#
+  #   volumes:
+  #     - ./data/pgadmin:/var/lib/pgadmin
+  #   depends_on:
+  #     - postgresql
+
+  # If you want to manage both database in one place just uncomment service below
+  # cloudbeaver:
+  #   image: dbeaver/cloudbeaver:latest
+  #   container_name: cloudbeaver
+  #   restart: always
+  #   ports:
+  #     - 8181:8978
+  #   volumes:
+  #     - ./data/cloudbeaver:/opt/cloudbeaver/workspace
+  #   depends_on:
+  #     - postgresql
+  #     - mysql

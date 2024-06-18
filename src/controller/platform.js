@@ -6,27 +6,25 @@ exports.getAllPlatform = async (req, res) => {
     const role = req.user.role;
     let skip = p * limit - limit;
 
-    if (role === "SYS" || role === "ADMIN" || role === "MARKETING") {
-      const data = await Platform.findAndCountAll({
-        attributes: {
-          exclude: ["createdAt", "updatedAt"],
-        },
-        order: [["createdAt", "DESC"]],
-        offset: skip,
-        limit,
-      });
-
-      res.status(200).send({
-        status: "Success",
-        total: data.count,
-        data: data.rows,
-      });
-    } else {
-      res.status(400).send({
-        status: "Error",
-        message: "You have no rights to access the data",
-      });
-    }
+    role === "SYS" || role === "ADMIN" || role === "MARKETING"
+      ? await Platform.findAndCountAll({
+          attributes: {
+            exclude: ["createdAt", "updatedAt"],
+          },
+          order: [["createdAt", "DESC"]],
+          offset: skip,
+          limit,
+        }).then((result) => {
+          res.status(200).send({
+            status: "Success",
+            total: result.count,
+            data: result.rows,
+          });
+        })
+      : res.status(400).send({
+          status: "Error",
+          message: "You have no rights to access the data",
+        });
   } catch (error) {
     res.status(400).send({
       status: "Error",
@@ -39,25 +37,23 @@ exports.getPlatforms = async (req, res) => {
   try {
     const role = req.user.role;
 
-    if (role === "SYS" || role === "ADMIN" || role === "MARKETING") {
-      const data = await Platform.findAndCountAll({
-        attributes: {
-          exclude: ["createdAt", "updatedAt"],
-        },
-        order: [["createdAt", "DESC"]],
-      });
-
-      res.status(200).send({
-        status: "Success",
-        total: data.count,
-        data: data.rows,
-      });
-    } else {
-      res.status(400).send({
-        status: "Error",
-        message: "You have no rights to access the data",
-      });
-    }
+    role === "SYS" || role === "ADMIN" || role === "MARKETING"
+      ? await Platform.findAndCountAll({
+          attributes: {
+            exclude: ["createdAt", "updatedAt"],
+          },
+          order: [["createdAt", "DESC"]],
+        }).then((result) => {
+          res.status(200).send({
+            status: "Success",
+            total: result.count,
+            data: result.rows,
+          });
+        })
+      : res.status(400).send({
+          status: "Error",
+          message: "You have no rights to access the data",
+        });
   } catch (error) {
     res.status(400).send({
       status: "Error",
@@ -71,24 +67,22 @@ exports.getPlatform = async (req, res) => {
     const { id } = req.params;
     const role = req.user.role;
 
-    if (role === "SYS" || role === "ADMIN" || role === "MARKETING") {
-      const data = await Platform.findOne({
-        where: { id },
-        attributes: {
-          exclude: ["createdAt", "updatedAt"],
-        },
-      });
-
-      res.status(200).send({
-        status: "Success",
-        data,
-      });
-    } else {
-      res.status(400).send({
-        status: "Error",
-        message: "You have no rights to access the data",
-      });
-    }
+    role === "SYS" || role === "ADMIN" || role === "MARKETING"
+      ? await Platform.findOne({
+          where: { id },
+          attributes: {
+            exclude: ["createdAt", "updatedAt"],
+          },
+        }).then((result) => {
+          res.status(200).send({
+            status: "Success",
+            data: result,
+          });
+        })
+      : res.status(400).send({
+          status: "Error",
+          message: "You have no rights to access the data",
+        });
   } catch (error) {
     res.status(400).send({
       status: "Error",
@@ -102,34 +96,32 @@ exports.createPlatform = async (req, res) => {
     const role = req.user.role;
     const { name } = req.body;
 
-    if (role === "SYS" || role === "ADMIN" || role === "MARKETING") {
-      await Platform.findOne({
-        where: {
-          name,
-        },
-      }).then(async (result) => {
-        result &&
-          res.status(400).send({
-            status: "Error",
-            message: "Platform already exist",
-          });
-
-        !result &&
-          (await Platform.create({
+    role === "SYS" || role === "ADMIN" || role === "MARKETING"
+      ? await Platform.findOne({
+          where: {
             name,
-          }).then((result) => {
-            res.status(200).send({
-              status: "Success",
-              data: result,
+          },
+        }).then(async (result) => {
+          result &&
+            res.status(400).send({
+              status: "Error",
+              message: "Platform already exist",
             });
-          }));
-      });
-    } else {
-      res.status(400).send({
-        status: "Error",
-        message: "You have no rights to access the data",
-      });
-    }
+
+          !result &&
+            (await Platform.create({
+              name,
+            }).then((result) => {
+              res.status(200).send({
+                status: "Success",
+                data: result,
+              });
+            }));
+        })
+      : res.status(400).send({
+          status: "Error",
+          message: "You have no rights to access the data",
+        });
   } catch (error) {
     res.status(400).send({
       status: "Error",
@@ -144,31 +136,29 @@ exports.editPlatform = async (req, res) => {
 
     const { id, name } = req.body;
 
-    if (role === "SYS" || role === "ADMIN" || role === "MARKETING") {
-      await Platform.update(
-        {
-          name,
-        },
-        { where: { id } }
-      )
-        .then(() => {
-          res.status(200).send({
-            status: "Success",
-            message: "Successfully edit platform data",
-          });
-        })
-        .catch((error) => {
-          res.status(400).send({
-            status: "Error",
-            message: error,
-          });
+    role === "SYS" || role === "ADMIN" || role === "MARKETING"
+      ? await Platform.update(
+          {
+            name,
+          },
+          { where: { id } }
+        )
+          .then(() => {
+            res.status(200).send({
+              status: "Success",
+              message: "Successfully edit platform data",
+            });
+          })
+          .catch((error) => {
+            res.status(400).send({
+              status: "Error",
+              message: error,
+            });
+          })
+      : res.status(400).send({
+          status: "Error",
+          message: "You have no rights to access the data",
         });
-    } else {
-      res.status(400).send({
-        status: "Error",
-        message: "You have no rights to access the data",
-      });
-    }
   } catch (error) {
     res.status(400).send({
       status: "Error",
@@ -182,26 +172,17 @@ exports.deletePlatform = async (req, res) => {
     const role = req.user.role;
     const { id } = req.params;
 
-    if (role === "SYS" || role === "ADMIN" || role === "MARKETING") {
-      await Platform.destroy({ where: { id } })
-        .then(() => {
+    role === "SYS" || role === "ADMIN" || role === "MARKETING"
+      ? await Platform.destroy({ where: { id } }).then(() => {
           res.status(200).send({
             status: "Success",
             message: "Successfully delete platform data",
           });
         })
-        .catch((error) => {
-          res.status(400).send({
-            status: "Error",
-            message: error,
-          });
+      : res.status(400).send({
+          status: "Error",
+          message: "You have no rights to access the data",
         });
-    } else {
-      res.status(400).send({
-        status: "Error",
-        message: "You have no rights to access the data",
-      });
-    }
   } catch (error) {
     res.status(400).send({
       status: "Error",
