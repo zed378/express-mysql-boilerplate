@@ -107,3 +107,81 @@ exports.createProduct = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+
+exports.updateProduct = async (req, res) => {
+  try {
+    const { id, name, description, price, categoryIds } = req.body;
+
+    const product = await Products.findByPk(id);
+
+    if (!product) {
+      return res.status(404).send({
+        status: "Error",
+        message: "Product not found",
+      });
+    }
+
+    await product.update({
+      name,
+      description,
+      price,
+    });
+
+    if (categoryIds && Array.isArray(categoryIds)) {
+      const categories = await Categories.findAll({
+        where: { id: categoryIds },
+      });
+      await product.setCategories(categories);
+    }
+
+    const data = await Products.findOne({
+      where: { id },
+      include: [
+        {
+          model: Categories,
+          as: "categories",
+          through: { attributes: [] },
+          attributes: { exclude: ["createdAt", "updatedAt"] },
+        },
+      ],
+      attributes: { exclude: ["createdAt", "updatedAt"] },
+    });
+
+    res.status(200).send({
+      status: "Success",
+      message: "Succesfully update",
+      data: data,
+    });
+  } catch (error) {
+    res.status(400).send({
+      status: "Error",
+      message: error.message,
+    });
+  }
+};
+
+exports.deleteProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const product = await Products.findByPk(id);
+
+    if (!product) {
+      return res.status(404).send({
+        status: "Error",
+        message: "Product not found",
+      });
+    }
+
+    await product.destroy();
+
+    res.status(200).send({
+      status: "Success",
+      message: "Product deleted successfully",
+    });
+  } catch (error) {
+    res.status(400).send({
+      status: "Error",
+      message: error.message,
+    });
+  }
+};

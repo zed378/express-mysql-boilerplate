@@ -40,12 +40,16 @@ Products.belongsToMany(Categories, {
   through: ProductCategories,
   as: "categories",
   foreignKey: "productId",
+  onUpdate: "CASCADE",
+  onDelete: "CASCADE",
 });
 
 Categories.belongsToMany(Products, {
   through: ProductCategories,
   as: "products",
   foreignKey: "categoryId",
+  onUpdate: "CASCADE",
+  onDelete: "CASCADE",
 });
 
 module.exports = {
