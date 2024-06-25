@@ -2,7 +2,7 @@ const { Sequelize, DataTypes } = require("sequelize");
 const { db } = require("../config");
 
 const Products = db.define(
-  "product",
+  "products",
   {
     id: {
       type: DataTypes.STRING,
@@ -10,14 +10,10 @@ const Products = db.define(
       primaryKey: true,
     },
     name: { type: DataTypes.STRING },
-    categoryId: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      references: {
-        model: "category",
-        key: "id",
-      },
+    price: {
+      type: DataTypes.INTEGER,
     },
+    description: { type: DataTypes.STRING },
     createdAt: {
       type: DataTypes.DATE,
       defaultValue: Sequelize.NOW,

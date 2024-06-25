@@ -1,7 +1,7 @@
 const express = require("express");
 require("dotenv").config();
 const cors = require("cors");
-const { Connection } = require("./config/connection");
+const { Connection } = require("./config");
 const { ensureFolderExisted } = require("./src/middleware/createFolder");
 
 const rateLimit = require("express-rate-limit");
@@ -27,13 +27,14 @@ const accessLogStream = fs.createWriteStream(
 
 // Define a custom token to format the timestamp in UTC+07:00
 morgan.token("custom-date", (req, res) => {
-  return moment().tz("Asia/Jakarta").format("DD/MMM/YYYY HH:mm:ss ZZ");
+  return moment().tz("Asia/Jakarta").format("DD/MMMM/YYYY HH:mm:ss ZZ");
 });
 
 // Define a custom format based on the "combined" format but replace the date with the custom token
 const customFormat =
   ':remote-addr - :remote-user [:custom-date] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"';
 
+// Routes
 const authRoute = require("./src/routes/auth");
 const migrateRoute = require("./src/routes/migrate");
 const userRoute = require("./src/routes/user");
@@ -45,6 +46,7 @@ const approachRoute = require("./src/routes/approach");
 const invRoutes = require("./src/routes/invoice");
 const svcRoutes = require("./src/routes/service");
 const categoryRoutes = require("./src/routes/category");
+const productRoutes = require("./src/routes/product");
 
 const app = express();
 app.use(cors());
@@ -66,8 +68,6 @@ const limiter = rateLimit({
 // app.use(limiter);
 app.use(helmet());
 app.use(xss());
-
-// Use Morgan middleware with the custom format and log stream
 app.use(morgan(customFormat, { stream: accessLogStream }));
 
 app.use("/auth", authRoute);
@@ -81,6 +81,7 @@ app.use("/approach", approachRoute);
 app.use("/inv", invRoutes);
 app.use("/svc", svcRoutes);
 app.use("/category", categoryRoutes);
+app.use("/product", productRoutes);
 
 app.get("/", (req, res) => {
   res.send({

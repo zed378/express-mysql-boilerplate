@@ -1,4 +1,10 @@
-const { Users, Status, Platform, Service } = require("../../models");
+const {
+  Users,
+  Status,
+  Platform,
+  Service,
+  Categories,
+} = require("../../models");
 const { Op } = require("sequelize");
 const { Up, Down } = require("../../config/migrate");
 
@@ -284,6 +290,38 @@ exports.seeding = async (req, res) => {
           },
         ]);
       })
+      .then(() => {
+        Categories.bulkCreate([
+          {
+            id: "abac0b72-73b5-45d6-b929-4a3d48da62e8",
+            name: "ATK",
+          },
+          {
+            id: "a37ec850-f264-486a-b129-245e2381eaf7",
+            name: "Bangunan",
+          },
+          {
+            id: "c35e757e-1194-4f3d-92f5-35e61179aaef",
+            name: "Pecah Belah",
+          },
+          {
+            id: "3eada538-1664-4022-8290-f4d18e41d088",
+            name: "Software",
+          },
+          {
+            id: "661161cc-c26b-43b9-aece-b4fffaf18136",
+            name: "Hardware",
+          },
+          {
+            id: "5e908f4b-5b4b-43bd-a8c4-2326f4d365aa",
+            name: "Aset Digital",
+          },
+          {
+            id: "a06231cc-fc4f-4fd8-b03a-390f7113143c",
+            name: "Surat Berharga",
+          },
+        ]);
+      })
       .then(() =>
         res.status(200).send({
           status: "Success",
@@ -373,6 +411,23 @@ exports.unseeding = async (req, res) => {
                 "MNT",
                 "HOST",
                 "DMN",
+              ],
+            },
+          },
+        });
+      })
+      .then(() => {
+        Categories.destroy({
+          where: {
+            id: {
+              [Op.in]: [
+                "abac0b72-73b5-45d6-b929-4a3d48da62e8",
+                "a37ec850-f264-486a-b129-245e2381eaf7",
+                "c35e757e-1194-4f3d-92f5-35e61179aaef",
+                "3eada538-1664-4022-8290-f4d18e41d088",
+                "661161cc-c26b-43b9-aece-b4fffaf18136",
+                "5e908f4b-5b4b-43bd-a8c4-2326f4d365aa",
+                "a06231cc-fc4f-4fd8-b03a-390f7113143c",
               ],
             },
           },

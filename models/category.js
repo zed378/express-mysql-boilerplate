@@ -2,7 +2,7 @@ const { Sequelize, DataTypes } = require("sequelize");
 const { db } = require("../config");
 
 const Categories = db.define(
-  "category",
+  "categories",
   {
     id: {
       type: DataTypes.STRING,

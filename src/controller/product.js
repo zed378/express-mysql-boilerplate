@@ -1,16 +1,46 @@
 const { Products, Categories } = require("../../models");
 const { Op } = require("sequelize");
 
-exports.getAllProducts = async (req, res) => {
+exports.getProducts = async (req, res) => {
   try {
     const { p, limit } = req.body;
     const { cat } = req.query;
     let skip = p * limit - limit;
 
+    let where = {};
+    if (cat) {
+      const category = await Categories.findOne({
+        where: { name: cat },
+        include: [
+          {
+            model: Products,
+            as: "products",
+            attributes: ["id"],
+            through: { attributes: [] },
+          },
+        ],
+      });
+
+      if (category) {
+        const productIds = category.products.map((product) => product.id);
+        where.id = { [Op.in]: productIds };
+      } else {
+        where.id = { [Op.in]: [] };
+      }
+    }
+
+    // Query products with the specified criteria
     const data = await Products.findAndCountAll({
-      attributes: {
-        exclude: ["createdAt", "updatedAt"],
-      },
+      include: [
+        {
+          model: Categories,
+          as: "categories",
+          through: { attributes: [] },
+          attributes: { exclude: ["description", "createdAt", "updatedAt"] },
+        },
+      ],
+      distinct: true,
+      where,
       order: [["createdAt", "DESC"]],
       offset: skip,
       limit,
@@ -23,8 +53,57 @@ exports.getAllProducts = async (req, res) => {
     });
   } catch (error) {
     res.status(400).send({
+      status: "Failed",
+      message: error.message,
+    });
+  }
+};
+
+exports.getProduct = async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    const product = await Products.findOne({
+      where: { id },
+      include: [
+        {
+          model: Categories,
+          as: "categories",
+          through: { attributes: [] },
+          attributes: { exclude: ["description", "createdAt", "updatedAt"] },
+        },
+      ],
+      attributes: { exclude: ["createdAt", "updatedAt"] },
+    });
+
+    res.status(200).send({
+      status: "Success",
+      data: product,
+    });
+  } catch (error) {
+    res.status(400).send({
       status: "Error",
       message: error.message,
     });
+  }
+};
+
+exports.createProduct = async (req, res) => {
+  const { name, description, price, categoryIds } = req.body;
+  try {
+    const product = await Products.create({ name, description, price });
+
+    if (categoryIds && categoryIds.length > 0) {
+      const categories = await Categories.findAll({
+        where: {
+          id: categoryIds,
+        },
+      });
+      await product.addCategories(categories);
+    }
+
+    res.status(201).json(product);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
   }
 };
