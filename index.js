@@ -3,50 +3,30 @@ require("dotenv").config();
 const cors = require("cors");
 const { Connection } = require("./config");
 const { ensureFolderExisted } = require("./src/middleware/createFolder");
+const { formatErrorToHTML } = require("./src/middleware/convertToHtml");
 
 const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
 const xss = require("xss-clean");
-
-// log
-const fs = require("fs");
-const path = require("path");
 const morgan = require("morgan");
+const path = require("path");
 const moment = require("moment-timezone");
+const fs = require("fs");
 
-// Ensure the log folder exists
+const { activityLogger, logger } = require("./src/middleware/activityLog"); // Import activityLogger middleware
+
+// Ensure the log folders exist
 ensureFolderExisted();
 
-// Create a write stream (in append mode) for logging
+// Define paths for access logs
+const logDir = path.join(__dirname, "log");
 const accessLogStream = fs.createWriteStream(
-  path.join(__dirname, "log/access.log"),
-  {
-    flags: "a",
-  }
+  path.join(
+    logDir,
+    `access/${moment().tz("Asia/Jakarta").format("YYYY-MM-DD")}-access.log`
+  ),
+  { flags: "a" }
 );
-
-// Define a custom token to format the timestamp in UTC+07:00
-morgan.token("custom-date", (req, res) => {
-  return moment().tz("Asia/Jakarta").format("DD/MMMM/YYYY HH:mm:ss ZZ");
-});
-
-// Define a custom format based on the "combined" format but replace the date with the custom token
-const customFormat =
-  ':remote-addr - :remote-user [:custom-date] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"';
-
-// Routes
-const authRoute = require("./src/routes/auth");
-const migrateRoute = require("./src/routes/migrate");
-const userRoute = require("./src/routes/user");
-const mailRoute = require("./src/routes/mail");
-const companyRoute = require("./src/routes/company");
-const platformRoute = require("./src/routes/platform");
-const statusRoute = require("./src/routes/status");
-const approachRoute = require("./src/routes/approach");
-const invRoutes = require("./src/routes/invoice");
-const svcRoutes = require("./src/routes/service");
-const categoryRoutes = require("./src/routes/category");
-const productRoutes = require("./src/routes/product");
 
 const app = express();
 app.use(cors());
@@ -68,7 +48,35 @@ const limiter = rateLimit({
 // app.use(limiter);
 app.use(helmet());
 app.use(xss());
+
+// Custom token for morgan to format timestamp
+morgan.token("custom-date", (req, res) => {
+  return moment().tz("Asia/Jakarta").format("DD/MMMM/YYYY HH:mm:ss ZZ");
+});
+
+// Custom format based on combined but with custom date
+const customFormat =
+  ':remote-addr - :remote-user [:custom-date] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"';
+
+// Use morgan for access logging
 app.use(morgan(customFormat, { stream: accessLogStream }));
+
+// Use activityLogger middleware for activity logging
+app.use(activityLogger);
+
+// Routes
+const authRoute = require("./src/routes/auth");
+const migrateRoute = require("./src/routes/migrate");
+const userRoute = require("./src/routes/user");
+const mailRoute = require("./src/routes/mail");
+const companyRoute = require("./src/routes/company");
+const platformRoute = require("./src/routes/platform");
+const statusRoute = require("./src/routes/status");
+const approachRoute = require("./src/routes/approach");
+const invRoutes = require("./src/routes/invoice");
+const svcRoutes = require("./src/routes/service");
+const categoryRoutes = require("./src/routes/category");
+const productRoutes = require("./src/routes/product");
 
 app.use("/auth", authRoute);
 app.use("/migrate", migrateRoute);
@@ -83,13 +91,31 @@ app.use("/svc", svcRoutes);
 app.use("/category", categoryRoutes);
 app.use("/product", productRoutes);
 
-app.get("/", (req, res) => {
-  res.send({
-    status: "Success",
-    message: "Your API is running",
-  });
+app.get("/error", (req, res, next) => {
+  const err = new Error("This is a test error");
+  err.status = 500;
+  next(err);
+});
+
+app.use((err, req, res, next) => {
+  const errorMessage = `Error - IP: ${req.ip}, Method: ${req.method}, URL: ${
+    req.originalUrl
+  }, Status: ${err.status || 500}, Message: ${err.message}`;
+
+  const errorLog = {
+    message: errorMessage,
+    error: err.stack,
+  };
+
+  logger.error(errorLog);
+
+  res
+    .status(err.status || 500)
+    .send(formatErrorToHTML("Error Has Been Occured", err.stack));
 });
 
 Connection();
 const port = process.env.PORT;
-app.listen(port, () => console.debug(`Server running on port: ${port}`));
+app.listen(port, () => {
+  logger.info(`Server is running on port ${port}`);
+});

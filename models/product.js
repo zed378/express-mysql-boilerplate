@@ -18,6 +18,15 @@ const Products = db.define(
       type: DataTypes.DATE,
       defaultValue: Sequelize.NOW,
     },
+    weight: {
+      type: DataTypes.INTEGER,
+    },
+    size: {
+      type: DataTypes.STRING,
+    },
+    stock: {
+      type: DataTypes.INTEGER,
+    },
     updatedAt: {
       type: DataTypes.DATE,
       defaultValue: Sequelize.NOW,

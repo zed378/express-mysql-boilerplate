@@ -9,6 +9,14 @@ exports.ensureFolderExisted = () => {
   const invoiceFolder = path.join(rootDir, "uploads/invoice");
   const reportFolder = path.join(rootDir, "uploads/report");
   const logFolder = path.join(rootDir, "log");
+  const accessLog = path.join(rootDir, "log/access");
+  const activityLog = path.join(rootDir, "log/activity");
+  const debugLog = path.join(rootDir, "log/activity/debug");
+  const errorLog = path.join(rootDir, "log/activity/error");
+  const httpLog = path.join(rootDir, "log/activity/http");
+  const infoLog = path.join(rootDir, "log/activity/info");
+  const verboseLog = path.join(rootDir, "log/activity/verbose");
+  const warnLog = path.join(rootDir, "log/activity/warn");
 
   // Check if document folder exists or not
   if (!fs.existsSync(documentFolder)) {
@@ -40,5 +48,69 @@ exports.ensureFolderExisted = () => {
     console.log("Log folder created.");
   } else {
     console.log("Log folder existed.");
+  }
+
+  // Check if access log folder exists or not
+  if (!fs.existsSync(accessLog)) {
+    fs.mkdirSync(accessLog, { recursive: true });
+    console.log("Access log folder created.");
+  } else {
+    console.log("Access log folder existed.");
+  }
+
+  // Check if activity log folder exists or not
+  if (!fs.existsSync(activityLog)) {
+    fs.mkdirSync(activityLog, { recursive: true });
+    console.log("Activity log folder created.");
+  } else {
+    console.log("Activity log folder existed.");
+  }
+
+  // Check if activity debug log folder exists or not
+  if (!fs.existsSync(debugLog)) {
+    fs.mkdirSync(debugLog, { recursive: true });
+    console.log("Activity debug log folder created.");
+  } else {
+    console.log("Activity debug log folder existed.");
+  }
+
+  // Check if activity log folder exists or not
+  if (!fs.existsSync(errorLog)) {
+    fs.mkdirSync(errorLog, { recursive: true });
+    console.log("Activity error log folder created.");
+  } else {
+    console.log("Activity errorlog folder existed.");
+  }
+
+  // Check if activity log folder exists or not
+  if (!fs.existsSync(httpLog)) {
+    fs.mkdirSync(httpLog, { recursive: true });
+    console.log("Activity http log folder created.");
+  } else {
+    console.log("Activity http log folder existed.");
+  }
+
+  // Check if activity log folder exists or not
+  if (!fs.existsSync(infoLog)) {
+    fs.mkdirSync(infoLog, { recursive: true });
+    console.log("Activity info log folder created.");
+  } else {
+    console.log("Activity info log folder existed.");
+  }
+
+  // Check if activity log folder exists or not
+  if (!fs.existsSync(verboseLog)) {
+    fs.mkdirSync(verboseLog, { recursive: true });
+    console.log("Activity verbose log folder created.");
+  } else {
+    console.log("Activity verbose log folder existed.");
+  }
+
+  // Check if activity log folder exists or not
+  if (!fs.existsSync(warnLog)) {
+    fs.mkdirSync(warnLog, { recursive: true });
+    console.log("Activity warn log folder created.");
+  } else {
+    console.log("Activity warn log folder existed.");
   }
 };
