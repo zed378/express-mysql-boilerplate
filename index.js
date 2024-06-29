@@ -3,30 +3,17 @@ require("dotenv").config();
 const cors = require("cors");
 const { Connection } = require("./config");
 const { ensureFolderExisted } = require("./src/middleware/createFolder");
+const { accessLog } = require("./src/middleware/accessLog");
 const { formatErrorToHTML } = require("./src/middleware/convertToHtml");
 
 const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
 const xss = require("xss-clean");
-const morgan = require("morgan");
-const path = require("path");
-const moment = require("moment-timezone");
-const fs = require("fs");
 
-const { activityLogger, logger } = require("./src/middleware/activityLog"); // Import activityLogger middleware
+const { activityLogger, logger } = require("./src/middleware/activityLog");
 
-// Ensure the log folders exist
+// Ensure necessary folders exist
 ensureFolderExisted();
-
-// Define paths for access logs
-const logDir = path.join(__dirname, "log");
-const accessLogStream = fs.createWriteStream(
-  path.join(
-    logDir,
-    `access/${moment().tz("Asia/Jakarta").format("YYYY-MM-DD")}-access.log`
-  ),
-  { flags: "a" }
-);
 
 const app = express();
 app.use(cors());
@@ -49,19 +36,8 @@ const limiter = rateLimit({
 app.use(helmet());
 app.use(xss());
 
-// Custom token for morgan to format timestamp
-morgan.token("custom-date", (req, res) => {
-  return moment().tz("Asia/Jakarta").format("DD/MMMM/YYYY HH:mm:ss ZZ");
-});
-
-// Custom format based on combined but with custom date
-const customFormat =
-  ':remote-addr - :remote-user [:custom-date] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"';
-
-// Use morgan for access logging
-app.use(morgan(customFormat, { stream: accessLogStream }));
-
-// Use activityLogger middleware for activity logging
+// Logging
+app.use(accessLog);
 app.use(activityLogger);
 
 // Routes
@@ -78,6 +54,7 @@ const svcRoutes = require("./src/routes/service");
 const categoryRoutes = require("./src/routes/category");
 const productRoutes = require("./src/routes/product");
 
+// Endpoint
 app.use("/auth", authRoute);
 app.use("/migrate", migrateRoute);
 app.use("/user", userRoute);
@@ -90,6 +67,13 @@ app.use("/inv", invRoutes);
 app.use("/svc", svcRoutes);
 app.use("/category", categoryRoutes);
 app.use("/product", productRoutes);
+
+app.get("/", (req, res) => {
+  res.status(200).send({
+    status: "Success",
+    message: "Your API is running",
+  });
+});
 
 app.get("/error", (req, res, next) => {
   const err = new Error("This is a test error");
@@ -118,4 +102,5 @@ Connection();
 const port = process.env.PORT;
 app.listen(port, () => {
   logger.info(`Server is running on port ${port}`);
+  console.log(`Server is running on port ${port}`);
 });
