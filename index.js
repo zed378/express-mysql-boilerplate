@@ -5,6 +5,7 @@ const { Connection } = require("./config");
 const { ensureFolderExisted } = require("./src/middleware/createFolder");
 const { accessLog } = require("./src/middleware/accessLog");
 const { formatErrorToHTML } = require("./src/middleware/convertToHtml");
+const { cronBackup } = require("./src/middleware/backup");
 
 const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
@@ -53,6 +54,7 @@ const invRoutes = require("./src/routes/invoice");
 const svcRoutes = require("./src/routes/service");
 const categoryRoutes = require("./src/routes/category");
 const productRoutes = require("./src/routes/product");
+const backupRoutes = require("./src/routes/backup");
 
 // Endpoint
 app.use("/auth", authRoute);
@@ -67,6 +69,7 @@ app.use("/inv", invRoutes);
 app.use("/svc", svcRoutes);
 app.use("/category", categoryRoutes);
 app.use("/product", productRoutes);
+app.use("/backup", backupRoutes);
 
 app.get("/", (req, res) => {
   res.status(200).send({
@@ -99,6 +102,7 @@ app.use((err, req, res, next) => {
 });
 
 Connection();
+cronBackup();
 const port = process.env.PORT;
 app.listen(port, () => {
   logger.info(`Server is running on port ${port}`);

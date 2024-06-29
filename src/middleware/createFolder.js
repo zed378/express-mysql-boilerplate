@@ -46,9 +46,9 @@ exports.ensureFolderExisted = () => {
   // Check if backup folder exists or not
   if (!fs.existsSync(backupFolder)) {
     fs.mkdirSync(backupFolder, { recursive: true });
-    console.log("Bancup folder created.");
+    console.log("Backup folder created.");
   } else {
-    console.log("Bancup folder existed.");
+    console.log("Backup folder existed.");
   }
 
   // Check if log folder exists or not

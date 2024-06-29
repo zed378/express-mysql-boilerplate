@@ -1,3 +1,14 @@
 data
 log
+backup
+
+# Dependency directories
 node_modules
+
+.env
+
+# Optional npm cache directory
+.npm
+
+# Optional REPL history
+.node_repl_history
