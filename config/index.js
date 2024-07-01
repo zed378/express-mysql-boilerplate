@@ -63,12 +63,14 @@ const pgConfig = {
   database: dbName,
   dialectOptions: {
     ssl: false,
+    useUTC: false,
+    timezone: "+07:00",
   },
+  supportsSearchPath: false,
 };
 
 const config = dialect === "mysql" ? mysqlConfig : pgConfig;
 
-let status;
 // Function to create database if it doesn't exist
 async function createDatabaseIfNotExists() {
   const sequelize = new Sequelize("", user, pass, {
@@ -93,10 +95,10 @@ async function createDatabaseIfNotExists() {
     console.log(`Database ${dbName} created or already exists.`);
   } catch (error) {
     console.error("Unable to create database:", error.message);
-    return (status = false);
+    return false;
   } finally {
     await sequelize.close();
-    return (status = true);
+    return true;
   }
 }
 
@@ -104,10 +106,9 @@ const db = new Sequelize(config);
 
 async function Connection() {
   try {
-    createDatabaseIfNotExists().then(async () => {
-      await db.authenticate();
-      console.log("DB Connected");
-    });
+    await createDatabaseIfNotExists();
+    await db.authenticate();
+    console.log("DB Connected");
   } catch (error) {
     console.log({
       status: "DB Connection Failed",

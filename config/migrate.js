@@ -15,7 +15,7 @@ async function Up() {
 
 async function Down() {
   try {
-    db.drop();
+    db.drop({});
     console.log("Table Dropped");
   } catch (error) {
     console.log(error);

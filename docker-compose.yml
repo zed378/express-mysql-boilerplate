@@ -24,20 +24,20 @@ services:
       # BACKUP_SCHEDULER: "0 0 * * *"
 
       # DB Configuration for mysql
-      DB_PORT: 3306
-      DB_HOST: mysql
-      DB_USER: webcompose
-      DB_PASS: webcompose
-      DB_NAME: webcompose
-      DB_DIALECT: mysql
+      # DB_PORT: 3306
+      # DB_HOST: mysql
+      # DB_USER: webcompose
+      # DB_PASS: webcompose
+      # DB_NAME: webcompose
+      # DB_DIALECT: mysql
 
       # DB Configuration for postgres
-      # DB_PORT: 5432
-      # DB_HOST: postgresql
-      # DB_USER: webcompose
-      # DB_PASS: Evazed123!@#
-      # DB_NAME: webcompose
-      # DB_DIALECT: postgres
+      DB_PORT: 5432
+      DB_HOST: postgresql
+      DB_USER: webcompose
+      DB_PASS: Evazed123!@#
+      DB_NAME: webcompose
+      DB_DIALECT: postgres
 
       # mail setting
       # MAIL_USER: your@mail.com
@@ -45,7 +45,7 @@ services:
       # MAIL_HOST: host.mail.com
 
     depends_on:
-      - mysql
+      # - mysql
       - postgresql
 
   postgresql:
@@ -62,40 +62,40 @@ services:
       POSTGRES_DB: webcompose
       PGDATA: /var/lib/postgresql/data/pgdata
 
-  mysql:
-    image: mysql
-    container_name: mysql
-    restart: always
-    ports:
-      - 3306:3306
-    volumes:
-      - ./data/mysql:/var/lib/mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: Evazed123!@#
-      MYSQL_DATABASE: webcompose
-      MYSQL_USER: webcompose
-      MYSQL_PASSWORD: webcompose
-      MYSQL_PORT: 3306
-      MYSQL_HOST: mysql
+  # mysql:
+  #   image: mysql
+  #   container_name: mysql
+  #   restart: always
+  #   ports:
+  #     - 3306:3306
+  #   volumes:
+  #     - ./data/mysql:/var/lib/mysql
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: Evazed123!@#
+  #     MYSQL_DATABASE: webcompose
+  #     MYSQL_USER: webcompose
+  #     MYSQL_PASSWORD: webcompose
+  #     MYSQL_PORT: 3306
+  #     MYSQL_HOST: mysql
 
   # Uncomment service below if you want to manage mysql
   # It automatically setup.
-  phpmyadmin:
-    image: phpmyadmin
-    container_name: phpmyadmin
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: Evazed123!@#
-      MYSQL_PASSWORD: Evazed123!@#
-      PMA_ARBITRARY: 1
-      PMA_HOST: mysql
-      PMA_PORT: 3306
-      PMA_USER: root
-      PMA_PASSWORD: Evazed123!@#
-    ports:
-      - 8080:80
-    depends_on:
-      - mysql
+  # phpmyadmin:
+  #   image: phpmyadmin
+  #   container_name: phpmyadmin
+  #   restart: always
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: Evazed123!@#
+  #     MYSQL_PASSWORD: Evazed123!@#
+  #     PMA_ARBITRARY: 1
+  #     PMA_HOST: mysql
+  #     PMA_PORT: 3306
+  #     PMA_USER: root
+  #     PMA_PASSWORD: Evazed123!@#
+  #   ports:
+  #     - 8080:80
+  #   depends_on:
+  #     - mysql
 
   # Uncomment service below if you want manage postgres
   # you need to manual setup to connect to database
@@ -124,4 +124,4 @@ services:
   #     - ./data/cloudbeaver:/opt/cloudbeaver/workspace
   #   depends_on:
   #     - postgresql
-  #     - mysql
+  # - mysql
