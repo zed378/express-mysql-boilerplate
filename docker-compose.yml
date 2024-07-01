@@ -20,6 +20,9 @@ services:
       HOST_URL: webcompose_be
       FE_URL: https://webcompose.id/login
 
+      # backup schedule cron expression
+      # BACKUP_SCHEDULER: "0 0 * * *"
+
       # DB Configuration for mysql
       DB_PORT: 3306
       DB_HOST: mysql
@@ -43,21 +46,21 @@ services:
 
     depends_on:
       - mysql
-      # - postgresql
+      - postgresql
 
-  # postgresql:
-  #   image: postgres
-  #   container_name: postgresql
-  #   restart: always
-  #   ports:
-  #     - 5432:5432
-  #   volumes:
-  #     - ./data/postgres:/var/lib/postgresql/data/pgdata
-  #   environment:
-  #     POSTGRES_PASSWORD: Evazed123!@#
-  #     POSTGRES_USER: webcompose
-  #     POSTGRES_DB: webcompose
-  #     PGDATA: /var/lib/postgresql/data/pgdata
+  postgresql:
+    image: postgres
+    container_name: postgresql
+    restart: always
+    ports:
+      - 5432:5432
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data/pgdata
+    environment:
+      POSTGRES_PASSWORD: Evazed123!@#
+      POSTGRES_USER: webcompose
+      POSTGRES_DB: webcompose
+      PGDATA: /var/lib/postgresql/data/pgdata
 
   mysql:
     image: mysql
@@ -96,19 +99,19 @@ services:
 
   # Uncomment service below if you want manage postgres
   # you need to manual setup to connect to database
-  # pgadmin:
-  #   image: dpage/pgadmin4
-  #   container_name: pgadmin
-  #   restart: always
-  #   ports:
-  #     - "8888:80"
-  #   environment:
-  #     PGADMIN_DEFAULT_EMAIL: zed@mail.com
-  #     PGADMIN_DEFAULT_PASSWORD: Evazed123!@#
-  #   volumes:
-  #     - ./data/pgadmin:/var/lib/pgadmin
-  #   depends_on:
-  #     - postgresql
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    restart: always
+    ports:
+      - "8888:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: zed@mail.com
+      PGADMIN_DEFAULT_PASSWORD: Evazed123!@#
+    volumes:
+      - ./data/pgadmin:/var/lib/pgadmin
+    depends_on:
+      - postgresql
 
   # If you want to manage both database in one place just uncomment service below
   # cloudbeaver:

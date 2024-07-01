@@ -5,6 +5,7 @@ const JSZip = require("jszip");
 const fse = require("fs-extra");
 const path = require("path");
 const moment = require("moment-timezone");
+const cronExp = process.env.BACKUP_SCHEDULER;
 
 const rootDir = path.join(__dirname, "../../");
 
@@ -73,8 +74,36 @@ async function backupAndZip() {
   }
 }
 
+async function extractZip(filePath, destDir) {
+  const zip = new JSZip();
+  const data = await fse.readFile(filePath);
+  const zipContent = await zip.loadAsync(data);
+
+  await Promise.all(
+    Object.keys(zipContent.files).map(async (fileName) => {
+      const file = zipContent.files[fileName];
+      if (!file.dir) {
+        const content = await file.async("nodebuffer");
+        const filePath = path.join(destDir, fileName);
+        try {
+          await fse.outputFile(filePath, content);
+        } catch (err) {
+          console.error(
+            `Failed to write file: ${filePath}, Error: ${err.message}`
+          );
+        }
+      }
+    })
+  );
+}
+
 const cronBackup = () => {
-  cron.schedule("0 0 * * *", async () => {
+  const message =
+    cronExp !== "0 0 * * *"
+      ? `You set cron expression as ${cronExp}`
+      : "Cron job started at 00:00 AM +0700";
+  console.log(message);
+  cron.schedule(cronExp ? cronExp : "0 0 * * *", async () => {
     console.log("Running backup task every minute for testing");
 
     try {
@@ -86,4 +115,4 @@ const cronBackup = () => {
   });
 };
 
-module.exports = { backupAndZip, cronBackup };
+module.exports = { backupAndZip, cronBackup, extractZip };
