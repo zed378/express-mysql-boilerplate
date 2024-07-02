@@ -1,4 +1,8 @@
-const { backupAndZip, extractZip } = require("../middleware/backup");
+const {
+  backupAndZip,
+  extractZip,
+  deleteOldFiles,
+} = require("../middleware/backup");
 const moment = require("moment-timezone");
 const { exec } = require("child_process");
 
@@ -212,7 +216,6 @@ exports.dumpPG = async (req, res) => {
 };
 
 exports.restorePG = async (req, res) => {
-  const prefix = moment().tz("Asia/Jakarta").format("YYYY-MMMM-DD__HH-mm-ss");
   try {
     const { filename } = req.params;
 
@@ -241,6 +244,22 @@ exports.restorePG = async (req, res) => {
     res.status(500).send({
       status: "Error",
       message: `Error restore database: ${error.message}`,
+    });
+  }
+};
+
+exports.deleteOldFIles = async (req, res) => {
+  try {
+    deleteOldFiles().then(() => {
+      res.status(200).send({
+        status: "Success",
+        message: "Delete old files successfully.",
+      });
+    });
+  } catch (error) {
+    res.status(500).send({
+      status: "Error",
+      message: `Error delete old files: ${error.message}`,
     });
   }
 };

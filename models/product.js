@@ -13,7 +13,7 @@ const Products = db.define(
     price: {
       type: DataTypes.INTEGER,
     },
-    description: { type: DataTypes.STRING },
+    description: { type: DataTypes.TEXT("long") },
     createdAt: {
       type: DataTypes.DATE,
       defaultValue: Sequelize.NOW,

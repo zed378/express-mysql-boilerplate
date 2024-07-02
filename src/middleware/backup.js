@@ -1,5 +1,6 @@
 const cron = require("node-cron");
 const axios = require("axios");
+const { logger } = require("./activityLog");
 
 const JSZip = require("jszip");
 const fse = require("fs-extra");
@@ -8,6 +9,7 @@ const moment = require("moment-timezone");
 const cronExp = process.env.BACKUP_SCHEDULER;
 
 const rootDir = path.join(__dirname, "../../");
+const backupFolder = path.join(rootDir, "backup");
 
 async function addFolderToZip(zip, folderPath, folderName = "") {
   const files = await fse.readdir(folderPath);
@@ -56,6 +58,7 @@ async function backupAndZip() {
 
     await zipFolder(tempLogBackupDir, logOutPath);
     console.log("Log folder successfully zipped!");
+    logger.info("Log folder successfully zipped!");
 
     await fse.remove(tempLogBackupDir);
 
@@ -65,10 +68,12 @@ async function backupAndZip() {
 
     await zipFolder(tempDataBackupDir, dataOutPath);
     console.log("Data folder successfully zipped!");
+    logger.info("Data folder successfully zipped!");
 
     await fse.remove(tempDataBackupDir);
 
     console.log("Temporary folders successfully deleted!");
+    logger.info("Temporary folders successfully deleted!");
   } catch (err) {
     console.error("Error during backup and zipping process:", err);
   }
@@ -97,22 +102,51 @@ async function extractZip(filePath, destDir) {
   );
 }
 
+async function deleteOldFiles() {
+  try {
+    const files = await fse.readdir(backupFolder);
+
+    const now = moment();
+
+    for (const file of files) {
+      const filePath = path.join(backupFolder, file);
+      const fileStat = await fse.stat(filePath);
+
+      const fileAgeInDays = now.diff(moment(fileStat.mtime), "days");
+
+      if (fileAgeInDays > 30) {
+        await fse.remove(filePath);
+        console.log(`Deleted: ${filePath}`);
+        logger.info(`Deleted: ${filePath}`);
+      }
+    }
+  } catch (error) {
+    console.error(`Error deleting old files: ${error.message}`);
+    logger.info(`Error deleting old files: ${error.message}`);
+  }
+}
+
 const cronBackup = () => {
   const message =
     cronExp !== "0 0 * * *"
       ? `You set cron expression as ${cronExp}`
       : "Cron job started at 00:00 AM +0700";
   console.log(message);
+  logger.info(message);
+
   cron.schedule(cronExp ? cronExp : "0 0 * * *", async () => {
-    console.log("Running backup task every minute for testing");
+    console.log("Running backup data folder");
+    logger.info("Running backup data folder");
 
     try {
       const response = await axios.get("http://localhost:5000/backup/start");
       console.log("Backup response:", response.data);
+      logger.info("Backup response:", response.data);
     } catch (error) {
       console.error("Error during backup request:", error.message);
+      logger.info("Error during backup request:", error.message);
     }
   });
 };
 
-module.exports = { backupAndZip, cronBackup, extractZip };
+module.exports = { backupAndZip, cronBackup, extractZip, deleteOldFiles };

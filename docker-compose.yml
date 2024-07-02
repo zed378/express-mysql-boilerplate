@@ -61,6 +61,8 @@ services:
       POSTGRES_USER: webcompose
       POSTGRES_DB: webcompose
       PGDATA: /var/lib/postgresql/data/pgdata
+      TZ: Asia/Bangkok
+      PGTZ: Asia/Bangkok
 
   # mysql:
   #   image: mysql

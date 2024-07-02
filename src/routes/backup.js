@@ -10,6 +10,7 @@ const {
   restoreMySQL,
   dumpPG,
   restorePG,
+  deleteOldFIles,
 } = require("../controller/backup");
 
 router.get("/start", backup);
@@ -19,5 +20,6 @@ router.get("/dump/mysql", dumpMySQL);
 router.get("/restore/mysql/:filename", restoreMySQL);
 router.get("/dump/postgres", dumpPG);
 router.get("/restore/postgres/:filename", restorePG);
+router.get("/delete", deleteOldFIles);
 
 module.exports = router;
