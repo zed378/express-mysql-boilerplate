@@ -1,27 +1,34 @@
 const { Sequelize, DataTypes } = require("sequelize");
 const { db } = require("../config");
+const { Users, Products } = require("./");
 
-const Products = db.define(
-  "products",
+const Ratings = db.define(
+  "ratings",
   {
     id: {
       type: DataTypes.STRING,
       defaultValue: Sequelize.UUIDV4,
       primaryKey: true,
     },
-    name: { type: DataTypes.STRING },
-    price: {
-      type: DataTypes.INTEGER,
-    },
-    description: { type: DataTypes.TEXT("long") },
-    weight: {
-      type: DataTypes.INTEGER,
-    },
-    size: {
+    userId: {
       type: DataTypes.STRING,
+      references: {
+        model: Users,
+        key: "id",
+      },
     },
-    stock: {
+    productId: {
+      type: DataTypes.STRING,
+      references: {
+        model: Products,
+        key: "id",
+      },
+    },
+    rate: {
       type: DataTypes.INTEGER,
+    },
+    comment: {
+      type: DataTypes.TEXT("long"),
     },
     createdAt: {
       type: DataTypes.DATE,
@@ -36,4 +43,4 @@ const Products = db.define(
   { freezeTableName: true, timestamps: true }
 );
 
-module.exports = { Products };
+module.exports = { Ratings };

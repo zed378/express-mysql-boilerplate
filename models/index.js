@@ -8,6 +8,7 @@ const { Service } = require("./service");
 const { Categories } = require("./category");
 const { Products } = require("./product");
 const { ProductCategories } = require("./product_category");
+const { Ratings } = require("./rating");
 
 // define database relation
 Approach.belongsTo(Status, {
@@ -52,6 +53,12 @@ Categories.belongsToMany(Products, {
   onDelete: "CASCADE",
 });
 
+// Product Rating
+Users.hasMany(Ratings, { foreignKey: "userId" });
+Products.hasMany(Ratings, { foreignKey: "productId" });
+Ratings.belongsTo(Users, { foreignKey: "userId" });
+Ratings.belongsTo(Products, { foreignKey: "productId" });
+
 module.exports = {
   Users,
   Clients,
@@ -63,4 +70,5 @@ module.exports = {
   Categories,
   Products,
   ProductCategories,
+  Ratings,
 };

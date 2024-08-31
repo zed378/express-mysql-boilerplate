@@ -1,13 +1,11 @@
 const { db } = require("./");
+const { logger } = require("../src/middleware/activityLog");
 
 async function Up() {
   try {
-    process.env.DB_DIALECT === "mysql" &&
-      (await db.query("CREATE DATABASE IF NOT EXISTS webcompose", {
-        raw: true,
-      }));
     db.sync({ alter: true });
     console.log("Database Synced");
+    logger.info("Database Synced");
   } catch (error) {
     console.log(error);
   }
@@ -17,6 +15,7 @@ async function Down() {
   try {
     db.drop({});
     console.log("Table Dropped");
+    logger.info("Table Dropped");
   } catch (error) {
     console.log(error);
   }
